@@ -19,6 +19,10 @@ The metrics we used are IoU and F1-score. The results are presented in the follo
 
 The visual results are presented in the following video: https://www.youtube.com/watch?v=WBlZlWDwU8s
 
+# Environment
+This code has been developed on Tensorflow 2.1.0 and Windows 10, Python=3.7.6
+Other necessary packages : imgaug, opencv-python, Pillow, xlwings, numpy, matplotlib, scikit-image, scikit-learn
+
 # Download pre-trained models
 Our pre-trained models (on the datasets shown above) are available at the following address: https://drive.google.com/file/d/1xvM19n1kdsNhRa0gZoagWEjHSH7paDxe/view?usp=sharing
 
