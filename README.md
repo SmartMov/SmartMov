@@ -13,6 +13,8 @@ We evaluated our network on different sequences of the CD-NET2014 dataset (skati
 The metrics we used are IoU and F1-score. The results are presented in the following table:
 
 | Metrics  | skating | PETS2006 | pedestrians | blizzard | snowFall | streetCorner | highway | Polytech | Mean  |
-| -------- | ------- | -------- | ----------- | -------- | -------- | ------------ | ------- | -------- | ----  |
+| :------: | :-----: | :------: | :---------: | :------: | :------: | :----------: | :-----: | :------: | :--:  |
 | IoU      | 0.816   | 0.82     | 0.62        | 0.75     | 0.56     | 0.38         | 0.64    | 0.62     | 0.651 |
 | F1-score | 0.847   | 0.93     | 0.72        | 0.839    | 0.884    | 0.429        | 0.789   | 0.834    | 0.784 |
+
+The visual results are presented in the following video: https://www.youtube.com/watch?v=WBlZlWDwU8s
