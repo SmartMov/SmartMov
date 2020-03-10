@@ -19,6 +19,19 @@ The metrics we used are IoU and F1-score. The results are presented in the follo
 
 The visual results are presented in the following video: https://www.youtube.com/watch?v=WBlZlWDwU8s
 
-# Load pre-trained models
+# Download pre-trained models
 Our pre-trained models (on the datasets shown above) are available at the following address: https://drive.google.com/file/d/1xvM19n1kdsNhRa0gZoagWEjHSH7paDxe/view?usp=sharing
+
 At this address are also present the mask-RCNN models trained on the COCO2014 dataset to predict only people, cars, or both.
+The downloaded models must then be placed in the models directory, which itself contains two sub-folders: Mask-RCNN and U-Net.
+
+# Predict
+Once the models are loaded, prediction can be made. The predict.py file in the samples folder allows you to make this prediction from the images in the directory specified in the code.
+
+# Training
+
+## Mask-RCNN
+The training of the Mask-RCNN is done as presented in the file train_rcnn.py in the samples folder. It is based on the ideas of the following article: https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d
+
+## U-Net
+U-Net training is done as presented in the train_unet.py file in the samples folder. It can be done in two ways: by using a DataGenerator object or by simply specifying a folder containing the images and groundtruths to be used for training.
