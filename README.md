@@ -49,7 +49,7 @@ SET PATH=C:\tools\cuda\bin;%PATH%
 * Executer Executable VisualStudio
 	Les 2 VC_redist (disponibles dans le fichier)
 
-##1.2. Créer l'environnement  Anaconda
+## 1.2. Créer l'environnement  Anaconda
 
 
 Notre codes necessitent  les packages suivants  *imgaug, opencv-python, Pillow, xlwings, numpy, matplotlib, scikit-image, scikit-learn*
@@ -103,7 +103,7 @@ Comme nous l'avons décrit précédemment, notre architecture correspond à la m
 
 Les modèles des réseaux entraînés sont disponible dans le fichier **__models__**. Le fichier disponible sur Github contient un lien qui permet de le télécharger (étant trop volumineux pour la plateforme).
 
-###**U Net**
+### **U Net**
 
 Le **U Net** ne doit être entraîné et ne peut être utilisé que sur la même dataset. Des modèles entraînés pour différentes dataset sont disponibles dans le sous-fichier **__models/Unet__** (skating, PETS2006, pedestrians, blizzard, snowFall, streetCorner, highway, Polytech).
 Il vous suffit de les load dans le fichier *blabla comment faire*
@@ -111,7 +111,7 @@ Il vous suffit de les load dans le fichier *blabla comment faire*
 Si vous voulez utiliser d'autre dataset il va falloir mettre les images dans le fichier **__dataset__** afin d’entraîner le **U Net**.
 Pour l'entrainer il *blabla comment faire*
 
-###**Mask R CNN**
+### **Mask R CNN**
 
 Concernant le **Mask R CNN**, nous l'avons entraîné de façon à qu'il reconnaisse les voitures et les humains. utiliser doit être juste réentrainé si vous voulez rajouter des classes do'bjets à détecter 
 
@@ -132,24 +132,6 @@ The metrics we used are IoU and F1-score. The results are presented in the follo
 
 The visual results are presented in the following video: https://www.youtube.com/watch?v=WBlZlWDwU8s
 
-
-
-# Download pre-trained models
-Our pre-trained models (on the datasets shown above) are available at the following address: https://drive.google.com/file/d/1xvM19n1kdsNhRa0gZoagWEjHSH7paDxe/view?usp=sharing
-
-At this address are also present the mask-RCNN models trained on the COCO2014 dataset to predict only people, cars, or both.
-The downloaded models must then be placed in the models directory, which itself contains two sub-folders: Mask-RCNN and U-Net.
-
-# Predict
-Once the models are loaded, prediction can be made. The predict.py file in the samples folder allows you to make this prediction from the images in the directory specified in the code.
-
-# Training
-
-## Mask-RCNN
-The training of the Mask-RCNN is done as presented in the file train_rcnn.py in the samples folder. It is based on the ideas of the following article: https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d
-
-## U-Net
-U-Net training is done as presented in the train_unet.py file in the samples folder. It can be done in two ways: by using a DataGenerator object or by simply specifying a folder containing the images and groundtruths to be used for training.
 
 
 
