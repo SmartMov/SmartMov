@@ -15,9 +15,9 @@ Dans ce read me, nous vous expliquons comment réaliser l'environnement adéquat
     2. Créer l’environnement  Anaconda
 2. **Fonctionnement des codes**
     1. Entrainement
-        + U Net
         + Mask-RCNN
-    2. Prediction
+        + U Net
+    2. Prédiction
     3. Evaluation
 3. **Resultats**
 
@@ -100,6 +100,7 @@ pip install tensorflow == 2.1.0
 ```
 ---
 <br>
+
 # 2. Fonctionnement des codes
 
 
@@ -111,20 +112,13 @@ Comme nous l'avons décrit précédemment, notre architecture correspond à la m
 * *__evaluate.py__* : applique l’algorithme à une dataset contenant des groundtruth afin de l’évaluer, need les modèles 
 
 <br>
-## 2.1 Entrainement
+
+## 2.1 Entraînement
 
 Les modèles des réseaux entraînés sont disponibles dans le fichier **__models__**. Le fichier disponible sur Github contient un lien qui permet de le télécharger (étant trop volumineux pour la plateforme).
 
 <br>
-### **U Net**
 
-Le **U Net** ne doit être entraîné et ne peut être utilisé que sur la même dataset. Des modèles entraînés pour différentes dataset sont disponibles dans le sous-fichier **__models/Unet__** (skating, PETS2006, pedestrians, blizzard, snowFall, streetCorner, highway, Polytech).
-
-Si vous voulez __utiliser d'autre dataset__ il va falloir mettre les images dans le fichier **__dataset_train__** afin d’entraîner le **U Net**.
-Pour l’entraîner sur une nouvelle dataset il *blabla comment faire*  *se faire de deux façons : en utilisant un objet DataGenerator ou en spécifiant simplement un dossier contenant les images et les vérités de base à utiliser pour la formation*
-Néanmoins, si vous voulez __améliorer un model__ déjà entraîné, cela est possible,vous pouvez le load et utiliser la fonction ...
-
-<br>
 ### **Mask-RCNN**
 
 Concernant le **Mask R CNN**, nous l'avons entraîné de façon à qu'il reconnaisse les voitures et les humains. Son entrainement est présent dans le fichier *__train_rcnn.py__* disponible dans le dossier **__samples__**,   il est basé sur les idées de l'article suivant : https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d. 
@@ -134,6 +128,17 @@ Il doit être réentrainé si vous voulez rajouter des classes d’objets à dé
 * *blabla*
 
 <br>
+
+### **U Net**
+
+Le **U Net** ne doit être entraîné et ne peut être utilisé que sur la même dataset. Des modèles entraînés pour différentes dataset sont disponibles dans le sous-fichier **__models/Unet__** (skating, PETS2006, pedestrians, blizzard, snowFall, streetCorner, highway, Polytech).
+
+Si vous voulez __utiliser d'autre dataset__ il va falloir mettre les images dans le fichier **__dataset_train__** afin d’entraîner le **U Net**.
+Pour l’entraîner sur une nouvelle dataset il *blabla comment faire*  *se faire de deux façons : en utilisant un objet DataGenerator ou en spécifiant simplement un dossier contenant les images et les vérités de base à utiliser pour la formation*
+Néanmoins, si vous voulez __améliorer un model__ déjà entraîné, cela est possible,vous pouvez le load et utiliser la fonction ...
+
+<br>
+
 ## 2.2 Prédiction
 
 La prédiction se fait dans le fichier *__predict.py__* disponible dans le dossier **__samples__**.
@@ -147,6 +152,7 @@ La prédiction d’une image correspond à la superposition de la même image et
 
 
 <br>
+
 ## 2.3 Evaluation
 
 L'évaluation se fait de la même façon que la prédiction à la différence qu'elle nécessite les vérités terrains, cela s'effectue dans le fichier *__evaluate.py__*. Il faut placer les images brutes à tester dans le dossier **__dataset_test/input__** et les groundtruth dans **__dataset_test/groundtruth__**. Le programme va donc comparer la prédiction avec les vérités (ne pas oublier de compiler les bons models). Pour jauger le réseau nous utilisons différentes métriques :
@@ -164,7 +170,9 @@ Ce fichier donne donc :
 * Une vidéo dont on peut régler le nombre de fps qui correspond à la concaténation de toutes les images prédites. Il faut que chaque frame de la vidéo est annotée; en haut à gauche : le nombre le temps d'inférence, le numéro de l'image et le temps d"inférence & en bas à droite : le score IoU et F1 pour l'image en question (section *Video*)
 
 ---
+
 <br>
+
 # 3. Resultats
 
 Nous avons évalué notre réseau sur différentes séquences de l'ensemble de données CD-NET2014 (skating, PETS2006, pedestrians, blizzard, snowfall, streetCornerAtNight, highway) ainsi que sur une vidéo (Polytech) que nous avons nous-mêmes annotée.
@@ -177,6 +185,9 @@ Les mesures que nous avons utilisées sont l'IoU et le F1. Les résultats sont p
 
 Les résultats visuels sont disponibles dans la vidéo YouTube suivante : https://www.youtube.com/watch?v=WBlZlWDwU8s
 
+---
+
+<br>
 
 > Pour toute question supplémentaire n’hésitez pas à nous contacter. 
 >
@@ -184,4 +195,4 @@ Les résultats visuels sont disponibles dans la vidéo YouTube suivante : https:
 > 
 > Mail : serranomael@gmail.com & jacques1434@gmail.com
 > 
-> LinkedIn : linkedin.com/jacques-budillon & linkedin.com/mael-serrano
+> LinkedIn : www.linkedin.com/in/jacques-budillon & www.linkedin.com/in/mael-serrano
