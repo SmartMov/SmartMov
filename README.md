@@ -165,8 +165,11 @@ L'évaluation se fait de la même façon que la prédiction à la différence qu
 
 <br>
 Ce fichier donne donc :
+
 * Les prédictions de toutes les images mis dans le dossier (section *Evaluation* du fichier)
+
 * Une nouvelle feuille d'un tableau excel contenant les résultats des différentes métriques ainsi que leurs évolutions temporelles (section *Excel création*)
+
 * Une vidéo dont on peut régler le nombre de fps qui correspond à la concaténation de toutes les images prédites. Il faut que chaque frame de la vidéo est annotée; en haut à gauche : le nombre le temps d'inférence, le numéro de l'image et le temps d"inférence & en bas à droite : le score IoU et F1 pour l'image en question (section *Video*)
 
 ---
