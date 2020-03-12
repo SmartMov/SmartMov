@@ -51,7 +51,7 @@ SET PATH=C:\tools\cuda\bin;%PATH%
 * Executer Executable VisualStudio
 Les 2 VC_redist (disponibles dans le fichier``)
 
-*Un tuto d’installation précédente est donné sur cette page https://www.tensorflow.org/install/gpu, nous l’avons simplifié et amélioré dans ce readme*
+*Un tuto de l’installation précédente est donné sur cette page https://www.tensorflow.org/install/gpu, nous l’avons simplifié et amélioré dans ce readme*
 
 ## 1.2. Créer l'environnement  Anaconda
 
