@@ -135,6 +135,7 @@ Le **U Net** ne doit être entraîné et ne peut être utilisé que sur la même
 
 Si vous voulez **utiliser d'autre dataset** il va falloir mettre les images dans le fichier [**dataset_train**](https://github.com/SmartMov/SmartMov/tree/master/dataset_train) afin d’entraîner le **U Net**.
 Pour l’entraîner sur une nouvelle dataset cela se passe dans le fichier [*train_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_unet.py) *blabla comment faire*  *se faire de deux façons : en utilisant un objet DataGenerator ou en spécifiant simplement un dossier contenant les images et les vérités de base à utiliser pour la formation*
+*vérifier seuil*
 Néanmoins, si vous voulez **améliorer un model** déjà entraîné, cela est possible,vous pouvez le load et utiliser la fonction ...
 
 <br>
