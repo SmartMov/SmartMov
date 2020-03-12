@@ -1,4 +1,4 @@
-# SmartMov
+# SmartMov'
 
 L’objectif de notre algorithme est de détecter et d’identifier des objets en mouvement dans des mauvaises conditions climatiques.
 
