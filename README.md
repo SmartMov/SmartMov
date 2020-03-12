@@ -104,7 +104,7 @@ pip install tensorflow == 2.1.0
 # 2. Fonctionnement des codes
 
 
-Comme nous l'avons décrit précédemment, notre architecture correspond à la mise en cascade de deux réseaux. Un U Net qui permet de détecter le mouvement et un Mask-RCNN qui classe les objets. Les fichiers utiles à l'entrainement et l'application de nos réseaux sont disponible dans le dossier **_samples_**, voici leur utilité :
+Comme nous l'avons décrit précédemment, notre architecture correspond à la mise en cascade de deux réseaux. Un U Net qui permet de détecter le mouvement et un Mask-RCNN qui classe les objets. Les fichiers utiles à l'entrainement et l'application de nos réseaux sont disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples), voici leur utilité :
 * *_draw.py_* : dessine l’architecture du **U Net**
 * *_train_rcnn.py_* : entraîne le model du **Mask-RCNN** (à utiliser pour rajouter des types d’objets à détecter)
 * *_train_unet.py_* : entraîne le model du **U Net** (à utiliser pour appliquer l’algorithme sur une nouvelle dataset)
@@ -115,7 +115,7 @@ Comme nous l'avons décrit précédemment, notre architecture correspond à la m
 
 ## 2.1 Entraînement
 
-Les modèles des réseaux entraînés sont disponibles dans le fichier **_models_**. Le fichier disponible sur Github contient un lien qui permet de le télécharger (étant trop volumineux pour la plateforme).
+Les modèles des réseaux entraînés sont disponibles dans le fichier [**models**](https://github.com/SmartMov/SmartMov/tree/master/models). Le fichier disponible sur Github contient un lien qui permet de le télécharger (étant trop volumineux pour la plateforme).
 
 <br>
 
@@ -141,7 +141,7 @@ Néanmoins, si vous voulez **améliorer un model** déjà entraîné, cela est p
 
 ## 2.2 Prédiction
 
-La prédiction se fait dans le fichier *_predict.py_* disponible dans le dossier **_samples_**.
+La prédiction se fait dans le fichier *_predict.py_* disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples).
 Pour effectuer la prédiction il faut placer les images à tester dans le fichier **_dataset_test/input_**.
 
 S'il y a eu un ajout de classes pour le Mask-RCNN il faut la rajouter à la suite dans le tableau du fichier ```class_names = ['BG','person','car']``` ainsi que rajouter le nombre de classes supplémentaires dans ```NUM_CLASSES=1+2```
