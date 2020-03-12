@@ -105,11 +105,11 @@ pip install tensorflow == 2.1.0
 
 
 Comme nous l'avons décrit précédemment, notre architecture correspond à la mise en cascade de deux réseaux. Un U Net qui permet de détecter le mouvement et un Mask-RCNN qui classe les objets. Les fichiers utiles à l'entrainement et l'application de nos réseaux sont disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples), voici leur utilité :
-* *_draw.py_* : dessine l’architecture du **U Net**
-* *_train_rcnn.py_* : entraîne le model du **Mask-RCNN** (à utiliser pour rajouter des types d’objets à détecter)
-* *_train_unet.py_* : entraîne le model du **U Net** (à utiliser pour appliquer l’algorithme sur une nouvelle dataset)
-* *_predict.py_* : applique l’algorithme à une dataset, need les modèles des deux réseaux entraînés
-* *_evaluate.py_* : applique l’algorithme à une dataset contenant des groundtruth afin de l’évaluer, need les modèles 
+* [*draw_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/draw_unet.py) : dessine l’architecture du **U Net**
+* [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py) : entraîne le model du **Mask-RCNN** (à utiliser pour rajouter des types d’objets à détecter)
+* [*train_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_unet.py) : entraîne le model du **U Net** (à utiliser pour appliquer l’algorithme sur une nouvelle dataset)
+* [*predict.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/predict.py) : applique l’algorithme à une dataset, need les modèles des deux réseaux entraînés
+* [*evaluate.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/evaluate.py) : applique l’algorithme à une dataset contenant des groundtruth afin de l’évaluer, need les modèles 
 
 <br>
 
@@ -121,7 +121,7 @@ Les modèles des réseaux entraînés sont disponibles dans le fichier [**models
 
 ### **Mask-RCNN**
 
-Concernant le **Mask R CNN**, nous l'avons entraîné de façon à qu'il reconnaisse les voitures et les humains. Son entrainement est présent dans le fichier *_train_rcnn.py_* disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples),   il est basé sur les idées de l'article suivant : https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d. 
+Concernant le **Mask R CNN**, nous l'avons entraîné de façon à qu'il reconnaisse les voitures et les humains. Son entrainement est présent dans le fichier [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py) disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples),   il est basé sur les idées de l'article suivant : https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d. 
 
 Il doit être réentrainé si vous voulez rajouter des classes d’objets à détecter. Cela se fait de la manière suivante :
 * Dans la classe *InferenceConfig* il faut ajouter   ...
@@ -131,18 +131,18 @@ Il doit être réentrainé si vous voulez rajouter des classes d’objets à dé
 
 ### **U Net**
 
-Le **U Net** ne doit être entraîné et ne peut être utilisé que sur la même dataset. Des modèles entraînés pour différentes dataset sont disponibles dans le sous-fichier **_models/Unet_** (skating, PETS2006, pedestrians, blizzard, snowFall, streetCorner, highway, Polytech).
+Le **U Net** ne doit être entraîné et ne peut être utilisé que sur la même dataset. Des modèles entraînés pour différentes dataset sont disponibles dans le sous-fichier **models/U-Net** (skating, PETS2006, pedestrians, blizzard, snowFall, streetCorner, highway, Polytech).
 
-Si vous voulez **utiliser d'autre dataset** il va falloir mettre les images dans le fichier **_dataset_train_** afin d’entraîner le **U Net**.
-Pour l’entraîner sur une nouvelle dataset il *blabla comment faire*  *se faire de deux façons : en utilisant un objet DataGenerator ou en spécifiant simplement un dossier contenant les images et les vérités de base à utiliser pour la formation*
+Si vous voulez **utiliser d'autre dataset** il va falloir mettre les images dans le fichier [**dataset_train**](https://github.com/SmartMov/SmartMov/tree/master/dataset_train) afin d’entraîner le **U Net**.
+Pour l’entraîner sur une nouvelle dataset cela se passe dans le fichier [*train_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_unet.py) *blabla comment faire*  *se faire de deux façons : en utilisant un objet DataGenerator ou en spécifiant simplement un dossier contenant les images et les vérités de base à utiliser pour la formation*
 Néanmoins, si vous voulez **améliorer un model** déjà entraîné, cela est possible,vous pouvez le load et utiliser la fonction ...
 
 <br>
 
 ## 2.2 Prédiction
 
-La prédiction se fait dans le fichier *_predict.py_* disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples).
-Pour effectuer la prédiction il faut placer les images à tester dans le fichier **_dataset_test/input_**.
+La prédiction se fait dans le fichier [*predict.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/predict.py) disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples).
+Pour effectuer la prédiction il faut placer les images à tester dans le fichier [**dataset_test/input**](https://github.com/SmartMov/SmartMov/tree/master/dataset_test/input).
 
 S'il y a eu un ajout de classes pour le Mask-RCNN il faut la rajouter à la suite dans le tableau du fichier ```class_names = ['BG','person','car']``` ainsi que rajouter le nombre de classes supplémentaires dans ```NUM_CLASSES=1+2```
 
@@ -155,7 +155,7 @@ La prédiction d’une image correspond à la superposition de la même image et
 
 ## 2.3 Evaluation
 
-L'évaluation se fait de la même façon que la prédiction à la différence qu'elle nécessite les vérités terrains, cela s'effectue dans le fichier *__evaluate.py__*. Il faut placer les images brutes à tester dans le dossier **_dataset_test/input_** et les groundtruth dans **_dataset_test/groundtruth_**. Le programme va donc comparer la prédiction avec les vérités (ne pas oublier de compiler les bons models). Pour jauger le réseau nous utilisons différentes métriques :
+L'évaluation se fait de la même façon que la prédiction à la différence qu'elle nécessite les vérités terrains, cela s'effectue dans le fichier [*evaluate.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/evaluate.py). Il faut placer les images brutes à tester dans le dossier [**dataset_test/input**](https://github.com/SmartMov/SmartMov/tree/master/dataset_test/input) et les groundtruth dans [**dataset_test/groundtruth**](https://github.com/SmartMov/SmartMov/tree/master/dataset_test/groundtruth). Le programme va donc comparer la prédiction avec les vérités (ne pas oublier de compiler les bons models). Pour jauger le réseau nous utilisons différentes métriques :
 * IoU  et F1 Score 
 * La matrice de confusion (matrice 2 x 2)
 
