@@ -9,7 +9,7 @@ Le Mask-RCNN est un réseau capable de s'adapter à tout type de données, ce qu
 ***Le code à été développé pour code Tensorflow 2.1.0, Windows 10 et Python=3.7.6***
 
 Dans ce read me, nous vous expliquons comment réaliser l'environnement adéquat et utiliser nos codes. De plus, nous communiquons les différents résultats obtenus sur différentes datasets. Voici la table des matières :
-
+# 1. Création environnement
 1. **Création environnement**
     1. Compiler TensorFlow sur GPU
     2. Créer l’environnement  Anaconda
