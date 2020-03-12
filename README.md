@@ -121,7 +121,7 @@ Les modèles des réseaux entraînés sont disponibles dans le fichier **_models
 
 ### **Mask-RCNN**
 
-Concernant le **Mask R CNN**, nous l'avons entraîné de façon à qu'il reconnaisse les voitures et les humains. Son entrainement est présent dans le fichier *_train_rcnn.py_* disponible dans le dossier **_samples_**,   il est basé sur les idées de l'article suivant : https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d. 
+Concernant le **Mask R CNN**, nous l'avons entraîné de façon à qu'il reconnaisse les voitures et les humains. Son entrainement est présent dans le fichier *_train_rcnn.py_* disponible dans le dossier **samples**,   il est basé sur les idées de l'article suivant : https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d. 
 
 Il doit être réentrainé si vous voulez rajouter des classes d’objets à détecter. Cela se fait de la manière suivante :
 * Dans la classe *InferenceConfig* il faut ajouter   ...
