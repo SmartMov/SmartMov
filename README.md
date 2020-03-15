@@ -140,7 +140,7 @@ Pour entrainer le Mask-RCNN, il faut créer une classe qui permettra de renvoyer
 
 La seconde méthode à déclarer est *load_mask()*. Cette méthode devra prendre en paramètre l'indice de l'image dans la dataset et renvoyer le masque correspondant. La sortie de cette fonction doit être un tuple de taille 2, comprenant un tableau de taille (H,W,nb_instances) et un autre tableau correspondant à l'indice de la classe de chaque instance.
 
-La classe a par exemple été crée pour la Dataset Davis, et le détail du code est présent dans le fichier davis.py.
+La classe a par exemple été crée pour la Dataset Davis, et le détail du code est présent dans le fichier [*davis.py*](https://github.com/SmartMov/SmartMov/blob/master/davis.py)
 Un autre exemple de création de la classe est à trouver à cette [*URL*](https://machinelearningmastery.com/how-to-train-an-object-detection-model-with-keras/).
 
 
