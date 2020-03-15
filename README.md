@@ -29,17 +29,17 @@ Dans ce read me, nous vous expliquons comment réaliser l'environnement adéquat
 ## 1.1 Compiler TensorFlow sur GPU
 
 
-Voici la listes des opérations à suivre utiliser le GPU :
-( un fichier que l'on a crée contenant tous les exécutables est disponible au téléchargeant [here](https://drive.google.com/file/d/1bFlTindxlSdjFx2aJfzhhh2NDMO3k3K_/view?usp=sharing) )
+Voici la listes des opérations à suivre utiliser le GPU (les informations officielles sont [ici](https://www.tensorflow.org/install/gpu)):
+( un dossier que l'on a créé contenant tous les exécutables est disponible au téléchargement [ici](https://drive.google.com/file/d/1bFlTindxlSdjFx2aJfzhhh2NDMO3k3K_/view?usp=sharing) )
 
 
 *  Vérifier si la carte graphique de l'ordinateur peut supporter (https://developer.nvidia.com/cuda-gpus)
-* Mise a jour NVIDIA (GeForce Experience)
-*  Installer Cuda 10.1 (executable disponible dans le fichier)
-*  Telecharger & Extraire Cudnn pour (zip disponible dans le fichier)
+*  Mise a jour NVIDIA (GeForce Experience)
+*  Installer Cuda 10.1 (executable disponible dans le dossier)
+*  Telecharger & Extraire Cudnn (zip disponible dans le dossier)
     * Copier les fichiers dans le répertoire : C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1
 * Ajout des variable d'environnement
-    * Liste des commandes pour modifier les variables d'environnement à faire dans cmd (admin) :
+    * Liste des commandes pour modifier les variables d'environnement, à faire dans cmd (admin) (sur Windows) :
 
 ```
 SET PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\bin;%PATH%
@@ -49,11 +49,11 @@ SET PATH=C:\tools\cuda\bin;%PATH%
 ```
 
 * Executer Executable VisualStudio
-Les 2 VC_redist (disponibles dans le fichier``)
+Les 2 VC_redist (disponibles dans le dossier)
 
-*Un tuto de l’installation précédente est donné sur cette page https://www.tensorflow.org/install/gpu, nous l’avons simplifié et amélioré dans ce readme*
+*Un tutoriel de cette installation est donné sur cette page https://www.tensorflow.org/install/gpu, nous l’avons simplifié et amélioré dans ce readme*
 
-## 1.2. Créer l'environnement  Anaconda
+## 1.2. Créer l'environnement Anaconda
 
 
 Notre programme nécessite les packages suivants  *imgaug, opencv-python, Pillow, xlwings, numpy, matplotlib, scikit-image, scikit-learn*
@@ -84,7 +84,7 @@ conda install scikit-image
 pip install tensorflow-gpu == 2.1.0
 ```
 
-Pour vérifier si la compilation GPU se fait bien , écrire dans le prompt de l'environnement créé :
+Pour vérifier si la compilation GPU se fait bien, écrire dans le prompt de l'environnement créé :
 
 ```
 python
@@ -92,7 +92,7 @@ import tensorflow as tf
 tf.test.gpu_device_name()
 ```
 
-Si à la fin il y a écrit  */device:GPU:0*  c'est que cela fonctionne
+Si les résultat est */device:GPU:0*, cela signifie que tout fonctionne
 
 * Tensorflow (pour CPU si l'étape 1.1 n'a pas été faite)
 ```
@@ -104,26 +104,26 @@ pip install tensorflow == 2.1.0
 # 2. Fonctionnement des codes
 
 
-Comme nous l'avons décrit précédemment, notre architecture correspond à la mise en cascade de deux réseaux. Un U Net qui permet de détecter le mouvement et un Mask-RCNN qui classe les objets. De plus, nous avons rajouté un suvi des formes afin que la couleur du masque d'un objet soit la même durant toute la scène. Les fichiers utiles à l'entrainement et l'application de nos réseaux sont disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples), voici leur utilité :
+Comme nous l'avons décrit précédemment, notre architecture correspond à la mise en cascade de deux réseaux. Un U-Net qui permet de détecter le mouvement, ainsi qu'un Mask-RCNN qui segmente et classe les objets. De plus, nous avons rajouté un suvi des formes afin que la couleur du masque d'un objet soit la même durant plusieurs images consécutives. Les fichiers utiles à l'entrainement et l'application de nos réseaux sont disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples), voici leur utilité :
 * [*draw_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/draw_unet.py) : dessine l’architecture du **U Net**
 * [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py) : entraîne le model du **Mask-RCNN** (à utiliser pour rajouter des types d’objets à détecter)
-* [*train_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_unet.py) : entraîne le model du **U Net** (à utiliser pour appliquer l’algorithme sur une nouvelle dataset)
-* [*predict.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/predict.py) : applique l’algorithme à une dataset, need les modèles des deux réseaux entraînés
-* [*evaluate.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/evaluate.py) : applique l’algorithme à une dataset contenant des groundtruth afin de l’évaluer, need les modèles 
+* [*train_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_unet.py) : entraîne le model du **U-Net** (à utiliser pour appliquer l’algorithme sur une nouvelle dataset)
+* [*predict.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/predict.py) : applique l’algorithme à une dataset, il faut auparavant que les deux réseaux soient entraînés
+* [*evaluate.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/evaluate.py) : applique l’algorithme à une dataset contenant des groundtruth afin de l’évaluer, il faut également que les deux réseaux soient entraînés
 
 <br>
 
 ## 2.1 Entraînement
 
-Les modèles des réseaux entraînés sont disponibles dans le fichier [**models**](https://github.com/SmartMov/SmartMov/tree/master/models). Le fichier disponible sur Github contient un lien qui permet de le télécharger (étant trop volumineux pour la plateforme).
+Les modèles des réseaux entraînés sont disponibles dans le fichier [**models**](https://github.com/SmartMov/SmartMov/tree/master/models). Ce fichier contient un lien qui permet de télécharger tous les modèles (étant trop volumineux pour être uploadés ici).
 
 <br>
 
 ### **Mask-RCNN**
 
-Concernant le **Mask R CNN**, nous l'avons entraîné de façon à qu'il reconnaisse les voitures et les humains. Son entrainement est présent dans le fichier [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py) disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples),   il est basé sur les idées de l'article suivant : https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d. 
+Concernant le **Mask-RCNN**, nous l'avons entraîné de façon à ce qu'il reconnaisse les voitures et les humains. La méthode d'entrainement que nous avons utilisée est détaillée dans le fichier [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py) disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples), elle est basée sur les idées de l'article suivant : https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d. 
 
-Il doit être réentrainé si vous voulez rajouter des classes d’objets à détecter. Cela se fait de la manière suivante :
+Il doit être ré-entrainé afin de rajouter des classes d’objets à détecter. Cela se fait de la manière suivante :
 * Dans la classe *InferenceConfig* il faut modifier l'attribut NUM_CLASSES qui devra valoir le nombre de classes que vous souhaitez détecter + 1 (pour le background).
 * La variable *class_names* doit également être modifiée et sa longueur doit être la même que NUM_CLASSES. *class_names* correspond aux noms des classes à détecter. Le premier élément doit être 'BG'.
 * Une classe doit être créé sur le modèle de la classe utils.Dataset. Le détail de la création de cette classe est ci-dessous.
@@ -149,10 +149,10 @@ Un autre exemple de création de la classe est à trouver à cette [*URL*](https
 
 ### **U-Net**
 
-Le **U-Net** ne doit être entraîné et ne peut être utilisé que sur la même dataset. Des modèles entraînés pour différentes dataset sont disponibles dans le sous-fichier **models/U-Net** (skating, PETS2006, pedestrians, blizzard, snowFall, streetCorner, highway, Polytech).
+Le **U-Net** ne peut être utilisé que sur des images semblables à celles de la dataset sur laquelle il s'est entrainé. Des modèles entraînés pour différentes dataset sont disponibles dans le sous-dossier **models/U-Net** (skating, PETS2006, pedestrians, blizzard, snowFall, streetCorner, highway, Polytech).
 
-Si vous voulez **utiliser d'autre dataset** il va falloir mettre les images dans le fichier [**dataset_train**](https://github.com/SmartMov/SmartMov/tree/master/dataset_train) afin d’entraîner le **U-Net**.
-Pour l’entraîner sur une nouvelle dataset cela se passe dans le fichier [*train_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_unet.py). Les différentes étapes présentées dans ce code sont les suivantes :
+Si vous voulez **utiliser d'autres datasets** il faut mettre les images dans le fichier [**dataset_train**](https://github.com/SmartMov/SmartMov/tree/master/dataset_train) afin d’entraîner le **U-Net**.
+Pour l’entraîner sur une nouvelle dataset, les détails sont dans le fichier [*train_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_unet.py). Les différentes étapes présentées dans ce code sont les suivantes :
 * Création du modèle avec *smartmov.create_model()*. Les paramètres sont 'unet' pour spécifier qu'il s'agit de ce type de modèle qui est à créer, 'shape_unet' doit être un tuple donnant la taille des images en entrée du réseau, et 'timestep' est le nombre d'images consécutives à utiliser pour estimer le mouvement.
 * Entrainement du modèle : Il existe deux méthodes d'entrainement :
     * La première consiste à utiliser un objet de type *DataGenerator* qui dans un premier temps charge les images avec *DataGenerator.load_data()* (qui prend en paramètre une liste de dossiers contenant les images et leurs groundtruth dans des dossiers "input" et "groudntruth" au sein de chacun des élements de la liste ainsi que le nombre d'images à utiliser parmi tous ces dossiers). Dans ce cas, lorsque la méthode *smartmov.train()* est appellée, le paramètre 'generator_unet' doit contenir cet objet créé avant. Les autres paramètres sont les classiques epochs et batch_size.
@@ -168,9 +168,9 @@ Néanmoins, il est également possible d'**améliorer un modèle** déjà entra�
 La prédiction se fait dans le fichier [*predict.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/predict.py) disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples).
 Pour effectuer la prédiction il faut placer les images à tester dans le fichier [**dataset_test/input**](https://github.com/SmartMov/SmartMov/tree/master/dataset_test/input).
 
-S'il y a eu un ajout de classes pour le Mask-RCNN il faut la rajouter à la suite dans le tableau du fichier ```class_names = ['BG','person','car']``` ainsi que rajouter le nombre de classes supplémentaires dans ```NUM_CLASSES=1+2```
+L'objet *InferenceConfig* créé au début du fichier doit être modifié pour être adapté au Mask-RCNN. Il faut que l'attribut ```NUM_CLASSES``` vale le nombre de classes différentes à détecter +1, et que la variable ```class_names=['BG',...]``` contienne tous les noms des classes à prédire.
 
-Il faut modifier dans la fonction : ```smartmov.load_models ( ... )``` le nom du model du **U Net** afin de le faire correspondre à la dataset à traiter  (et aussi modifier celui du **Mask-RCNN** si vous l’avez ré entrainé).
+Il faut modifier dans la fonction : ```smartmov.load_models ( ... )``` le nom du fichier contenant le modèle du **U-Net** afin de le faire correspondre à la dataset à traiter  (et aussi modifier celui du **Mask-RCNN** si vous l’avez ré-entrainé).
 
 La prédiction d’une image correspond à la superposition de la même image et des différents masques de couleur ainsi que la boîte englobante des objets prédis en mouvement. Nous ajoutons à cela en haut de la box le nom de la classe et sa probabilité prédite d’appartenance. Nous instaurez un notion de tracking pour que  chaque objet garde la même couleur tout au long de la scène.
 
@@ -179,28 +179,34 @@ La prédiction d’une image correspond à la superposition de la même image et
 
 ## 2.3 Evaluation
 
-L'évaluation se fait de la même façon que la prédiction à la différence qu'elle nécessite les vérités terrains, cela s'effectue dans le fichier [*evaluate.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/evaluate.py). Il faut placer les images brutes à tester dans le dossier [**dataset_test/input**](https://github.com/SmartMov/SmartMov/tree/master/dataset_test/input) et les groundtruth dans [**dataset_test/groundtruth**](https://github.com/SmartMov/SmartMov/tree/master/dataset_test/groundtruth). Le programme va donc comparer la prédiction avec les vérités (ne pas oublier de compiler les bons models). Pour jauger le réseau nous utilisons différentes métriques :
-* IoU  et F1 Score 
-* La matrice de confusion (matrice 2 x 2)
+L'évaluation se fait de la même façon que la prédiction à la différence qu'elle nécessite les vérités terrains, cela s'effectue dans le fichier [*evaluate.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/evaluate.py). Il faut placer les images brutes à tester dans le dossier [**dataset_test/input**](https://github.com/SmartMov/SmartMov/tree/master/dataset_test/input) et les groundtruth dans [**dataset_test/groundtruth**](https://github.com/SmartMov/SmartMov/tree/master/dataset_test/groundtruth). Le programme va donc comparer la prédiction avec les vérités (ne pas oublier de compiler les bons modèles comme pour la prédiction). Pour jauger le réseau nous utilisons différentes métriques :
+* Si la vérité terrain est un simple masque binaire :
+    * IoU  et F1 Score
+    * La matrice de confusion (matrice 2 x 2)
+* Si la vérité terrain est un découpage de chaque instance :
+    * IoU et F1 Score
+    * Matrice de confusion (2 x 2)
+    * Correspondances de chacun des rectangles (IoU sur les paires de rectangles)
+    * Correspondances de chacun des masques (IoU sur les paires de masques)
 
-| Number of pixels **correctly detected** as « movement » | Nb of pixels which **should have been detected** as « movement » |
+| Nombre de pixels **correctement détectés** comme « en mouvement » | Nombre de pixels qui **auraient du être détectés** comme « en mouvement » |
 | :------: | :-----: | 
-| Nb of pixels which **shouldn’t have been detected** as « mouvement » | Nb of pixels **correctly detected** as  « non movement » |
+| Nombre de pixels qui **n'auraient pas du être détectés** comme « en mouvement » | Nombre de pixels **correctement détectés** comme « sans mouvement » |
 
 <br>
 Ce fichier donne donc :
 
-* Les prédictions de toutes les images mis dans le dossier (section *Evaluation* du fichier)
+* Les prédictions de toutes les images mises dans le dossier (section *Evaluation* du fichier)
 
-* Une nouvelle feuille d'un tableau excel contenant les résultats des différentes métriques ainsi que leurs évolutions temporelles (section *Excel création*)
+* Une nouvelle feuille d'un tableau Excel contenant les résultats des différentes métriques ainsi que leurs évolutions temporelles (section *Excel création*)
 
-* Une vidéo dont on peut régler le nombre de fps qui correspond à la concaténation de toutes les images prédites. Il faut que chaque frame de la vidéo est annotée; en haut à gauche : le nombre le temps d'inférence, le numéro de l'image et le temps d"inférence & en bas à droite : le score IoU et F1 pour l'image en question (section *Video*)
+* Une vidéo dont on peut régler le nombre de fps qui correspond à la concaténation de toutes les images prédites. Chaque frame de la vidéo est annotée, avec en haut à gauche : le nombre d'objets détectés, le temps d'inférence et le numéro de l'image dans la séquence & en bas à droite : le score IoU et F1 pour l'image en question (section *Video*)
 
 ---
 
 <br>
 
-# 3. Resultats
+# 3. Résultats
 
 Nous avons évalué notre réseau sur différentes séquences de l'ensemble de données CD-NET2014 (skating, PETS2006, pedestrians, blizzard, snowfall, streetCornerAtNight, highway) ainsi que sur une vidéo (Polytech) que nous avons nous-mêmes annotée.
 Les mesures que nous avons utilisées sont l'IoU et le F1. Les résultats sont présentés dans le tableau suivant :
