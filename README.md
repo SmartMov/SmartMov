@@ -147,14 +147,19 @@ Un autre exemple de création de la classe est à trouver à cette [*URL*](https
 
 <br>
 
-### **U Net**
+### **U-Net**
 
-Le **U Net** ne doit être entraîné et ne peut être utilisé que sur la même dataset. Des modèles entraînés pour différentes dataset sont disponibles dans le sous-fichier **models/U-Net** (skating, PETS2006, pedestrians, blizzard, snowFall, streetCorner, highway, Polytech).
+Le **U-Net** ne doit être entraîné et ne peut être utilisé que sur la même dataset. Des modèles entraînés pour différentes dataset sont disponibles dans le sous-fichier **models/U-Net** (skating, PETS2006, pedestrians, blizzard, snowFall, streetCorner, highway, Polytech).
 
-Si vous voulez **utiliser d'autre dataset** il va falloir mettre les images dans le fichier [**dataset_train**](https://github.com/SmartMov/SmartMov/tree/master/dataset_train) afin d’entraîner le **U Net**.
-Pour l’entraîner sur une nouvelle dataset cela se passe dans le fichier [*train_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_unet.py) *blabla comment faire*  *se faire de deux façons : en utilisant un objet DataGenerator ou en spécifiant simplement un dossier contenant les images et les vérités de base à utiliser pour la formation*
-*vérifier seuil*
-Néanmoins, si vous voulez **améliorer un model** déjà entraîné, cela est possible,vous pouvez le load et utiliser la fonction ...
+Si vous voulez **utiliser d'autre dataset** il va falloir mettre les images dans le fichier [**dataset_train**](https://github.com/SmartMov/SmartMov/tree/master/dataset_train) afin d’entraîner le **U-Net**.
+Pour l’entraîner sur une nouvelle dataset cela se passe dans le fichier [*train_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_unet.py). Les différentes étapes présentées dans ce code sont les suivantes :
+* Création du modèle avec *smartmov.create_model()*. Les paramètres sont 'unet' pour spécifier qu'il s'agit de ce type de modèle qui est à créer, 'shape_unet' doit être un tuple donnant la taille des images en entrée du réseau, et 'timestep' est le nombre d'images consécutives à utiliser pour estimer le mouvement.
+* Entrainement du modèle : Il existe deux méthodes d'entrainement :
+    ** La première consiste à utiliser un objet de type *DataGenerator* qui dans un premier temps charge les images avec *DataGenerator.load_data()* (qui prend en paramètre une liste de dossiers contenant les images et leurs groundtruth dans des dossiers "input" et "groudntruth" au sein de chacun des élements de la liste ainsi que le nombre d'images à utiliser parmi tous ces dossiers). Dans ce cas, lorsque la méthode *smartmov.train()* est appellée, le paramètre 'generator_unet' doit contenir cet objet créé avant. Les autres paramètres sont les classiques epochs et batch_size.
+    ** La seconde consiste à simplement passer en paramètre de la méthode *smartmov.train()* le paramètre 'dir_train_unet' (qui correspond à un dossier organisé de la même manière que pour la première méthode) ainsi que le batch_size et le nombre d'epochs.
+* Une fois l'entrainement terminé, le modèle peut être sauvegardé en utilisant la méthode *smartmov.save()* avec les paramètres 'models_to_save'='unet' et 'dir_unet' correspond au fichier .h5 ou le modèle sera sauvegardé.
+
+Néanmoins, il est également possible d'**améliorer un modèle** déjà entraîné, il faut pour ce faire d'abord utiliser la méthode *smartmov.load_model()* en chargeant le modèle à améliorer puis ensuite utiliser la méthode *smartmov.train()* de la même manière que décrit ci-dessus (sans utiliser *smartmov.create_model()*).
 
 <br>
 
