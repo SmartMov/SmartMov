@@ -124,8 +124,25 @@ Les modèles des réseaux entraînés sont disponibles dans le fichier [**models
 Concernant le **Mask R CNN**, nous l'avons entraîné de façon à qu'il reconnaisse les voitures et les humains. Son entrainement est présent dans le fichier [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py) disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples),   il est basé sur les idées de l'article suivant : https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d. 
 
 Il doit être réentrainé si vous voulez rajouter des classes d’objets à détecter. Cela se fait de la manière suivante :
-* Dans la classe *InferenceConfig* il faut ajouter   ...
-* *blabla*
+* Dans la classe *InferenceConfig* il faut modifier l'attribut NUM_CLASSES qui devra valoir le nombre de classes que vous souhaitez détecter + 1 (pour le background).
+* La variable *class_names* doit également être modifiée et sa longueur doit être la même que NUM_CLASSES. *class_names* correspond aux noms des classes à détecter. Le premier élément doit être 'BG'.
+* Une classe doit être créé sur le modèle de la classe utils.Dataset. Le détail de la création de cette classe est ci-dessous.
+* L'objet correspondant à cette classe doit être créé puis la dataset doit être chargée en utilisant la méthode *load_dataset()* crée ci-dessus. La dataset doit ensuite être préparée avec la méthode *prepare()*
+* Il faut ensuite créer le modèle RCNN avec *smartmov.create_model()*. Les paramètres à utiliser sont 'model_dir' qui correspond à la localisation des logs, 'config' qui doit contenir l'objet créé avec la classe InferenceConfig, 'reuse'=True pour réutiliser un ancien modèle, 'model_rcnn' doit contenir le fichier .h5 contenant les poids du modèle RCNN déjà entrainé et 'class_names' doit être la liste des noms de classes crée plus haut.
+* Ensuite la méthode *smartmov.train()* doit être utilisée afin d'entrainer réellement le Mask-RCNN. Les paramètres sont 'dataset_train_rcnn' qui correspond à l'objet créé au-dessus contenant les images pour le training, 'dataset_val_rcnn' est le même type d'objet mais contenant les images pour la validation, 'epochs_rcnn' correspond au nombre d'epochs pour l'entrainement, et 'layers'='heads' pour ne pas réentrainer tous les poids du réseau (inutile puisqu'un modèle pré-entrainé a été chargé)
+* Une fois l'entrainement terminé, il est important de convertir le modèle en mode 'inference' avant de pouvoir faire des prédictions. Pour ce faire, il faut utiliser la méthode *smartmov.convert_rcnn()*
+* Il est enfin possible d'enregistrer le modèle en utilisant *smartmov.save()* avec pour paramètres 'models_to_use'='rcnn' et 'dir_rcnn' le chemin du fichier .h5 ou enregsitrer les poids.
+
+#### Création de la classe pour l'entrainement du Mask-RCNN
+Pour entrainer le Mask-RCNN, il faut créer une classe qui permettra de renvoyer tous les masques et les images qui leur correspondent. Pour ce faire, deux méthodes doivent être déclarées. La première est *load_dataset()*. Elle doit fonctionner comme ceci :
+* Pour chaque classe que l'on souhaite détecter, il faut appeller la méthode *add_class()* de *utils_Dataset* afin que l'objet créé ensuite connaisse toutes les classes qu'il devra détecter
+* Pour chaque image de la dataset, il faut appeller la méthode *add_image()*. De cette manière, lorsque nous appelerons la méthode *load_image()* à partir de l'indice de l'image dans la dataset, toutes les informations de l'image seront connues.
+
+La seconde méthode à déclarer est *load_mask()*. Cette méthode devra prendre en paramètre l'indice de l'image dans la dataset et renvoyer le masque correspondant. La sortie de cette fonction doit être un tuple de taille 2, comprenant un tableau de taille (H,W,nb_instances) et un autre tableau correspondant à l'indice de la classe de chaque instance.
+
+La classe a par exemple été crée pour la Dataset Davis, et le détail du code est présent dans le fichier davis.py.
+Un autre exemple de création de la classe est à trouver à cette [*URL*](https://machinelearningmastery.com/how-to-train-an-object-detection-model-with-keras/).
+
 
 <br>
 
