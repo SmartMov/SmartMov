@@ -430,7 +430,7 @@ class SmartMov:
             self.unet.save(kwargs['dir_unet'])
             self.rcnn.keras_model.save_weights(kwargs['dir_rcnn'])
     
-    def evaluate(self, pred, gt, models_used='all', metrics_to_compute=['f1'], gt_type='bool'):
+    def evaluate(self, pred, gt, gt_classes=None, models_used='all', metrics_to_compute=['f1'], gt_type='bool'):
         """
         Fonction qui retourne la métrique choisie
 
@@ -440,6 +440,9 @@ class SmartMov:
         gt_type : type des vérités terrains. Soit 'instance' soit 'bool'. Par défaut 'bool'.\n
         pred : tuple (predictions, nombre de personnes). Résultat de la fonction predict.\n
         gt : groundtruth
+        gt_classes : groundtruth pour la correspondance des classes.
+                     Nécessaire si 'class' est dans metrics_to_compute.
+                     De la forme (numéros des classes,nombre d'instance dans l'image pour chaque classe)
         models_used : models utilisés pour faire la prédiction
 
         Returns
@@ -450,7 +453,9 @@ class SmartMov:
         
         assert models_used in ['all','rcnn'],"models_used doit être 'all' ou 'rcnn'"
         for met in metrics_to_compute:
-            assert met in ['iou','conf','f1','rect','masks'], "La métrique {} n'existe pas".format(met)
+            assert met in ['iou','conf','f1','rect','masks','class'], "La métrique {} n'existe pas".format(met)
+            if met=='class':
+                assert gt_classes is not None, "L'évaluation sur la correspondance des classes ne peut pas être faite si gt_classes==None"
         
         if models_used=='rcnn':
             if pred['masks'] == []:
@@ -518,10 +523,12 @@ class SmartMov:
             elif met=='masks':
                 assert gt_type=='instance', "Pour l'évaluation sur les {}, il faut des gt de type 'instance'".format(met)
                 self.last_metrics.append(metrics.score_mask(pred3[0]['masks'],gt,pred3[0]['rois'],gt_rois,s))
+            elif met=='class':
+                self.last_metrics.append(metrics.metrique_classification(pred3,gt_classes[0],gt_classes[1]))
                 
         return self.last_metrics
     
-    def single_display(self,inp,predic=None,gt=None,temps_predic=0,display=['nb_obj'],metrics_to_display=None,gt_type=None,models_used='all',num_im=0,colors=None,couleur_texte=(255,0,0),return_colors=False,return_scores=False,return_pred=False):
+    def single_display(self,inp,predic=None,gt=None,gt_classes=None,temps_predic=0,display=['nb_obj'],metrics_to_display=None,gt_type=None,models_used='all',num_im=0,colors=None,couleur_texte=(255,0,0),return_colors=False,return_scores=False,return_pred=False):
         """
         Renvoie l'image traitée à partir d'une séquence de 5 images d'entrée ou de la prédiction déjà effectuée.        
 
@@ -535,6 +542,9 @@ class SmartMov:
         gt : groundtruth utilisée pour faire l'évaluation, optionnel
              Nécéssaire si metrics_to_display n'est pas None.
              Par défaut None (pas besoin de groundtruth)
+        gt_classes : groundtruth utilisée pour faire l'évaluation de la correspondandce des classes, optionnel
+                     Nécéssaire si scores!=None et 'class' est dans metrics_to_display
+                     Par défaut None
         temps_predic : int, optionnel (nécéssaire si predic!=None et si 'temps' est dans display)
                        Dans le cas ou la prédiciton a été faite auparavant (predic != None) et que l'on souhaite afficher le temps d'inférence sur l'image
                        Par défaut 0
@@ -545,7 +555,7 @@ class SmartMov:
                   Par défaut ['nb_obj']
         metrics_to_display : list, optionnel
                              Liste des métriques à calculer et à afficher sur l'image. La matrice de confusion ne sera jamais affichée sur l'image mais peut être tout de même calculée pour la récupérer en sortie.
-                             Doit être parmi ['iou','f1','conf','rect','masks']. Cette liste correspond à celle de la méthode evaluate. Les mêmes restrictions s'y appliquent.
+                             Doit être parmi ['iou','f1','conf','rect','masks','class']. Cette liste correspond à celle de la méthode evaluate. Les mêmes restrictions s'y appliquent.
                              Pour calculer 'rect' et 'masks', les groundtruth doivent être de type 'instance' (gt_type='instance').
                              Si metrics_to_display!=None, gt_type doit être spécifié
                              Par défaut None (signifie qu'aucun score n'est calculé)
@@ -622,7 +632,9 @@ class SmartMov:
                 assert gt is not None, "Pas de groundtruth,donc les scores ne peuvent pas être calculés"
                 assert metrics_to_display is not None, "Une liste des métriques à afficher doit être donnée"
                 assert gt_type is not None, "Le type de groundtruth doit être spécifié (bool ou instance)"
-                evaluat = self.evaluate(pred,gt,models_used,metrics_to_display, gt_type)
+                if 'class' in metrics_to_display:
+                    assert gt_classes is not None, "L'évaluation sur la correspondance des classes ne peut pas être faite si gt_classes==None"
+                evaluat = self.evaluate(pred,gt,gt_classes=gt_classes,models_used=models_used,metrics_to_compute=metrics_to_display, gt_type=gt_type)
                 nb_scores=0
                 for i,met in enumerate(evaluat):
                     if metrics_to_display[i]=='iou':
@@ -642,6 +654,11 @@ class SmartMov:
                         nb_scores+=1
                     elif metrics_to_display[i]=='masks':
                         im_output = cv2.putText(im_output, "Mask {:.2f}".format(met),
+                    	                        (offset_horiz_scores, im_output.shape[0]-nb_scores*offset_texte-10),
+                                                cv2.FONT_HERSHEY_SIMPLEX, taille, couleur, epaisseur)
+                        nb_scores+=1
+                    elif metrics_to_display[i]=='class':
+                        im_output = cv2.putText(im_output, "Class {:.2f}".format(met),
                     	                        (offset_horiz_scores, im_output.shape[0]-nb_scores*offset_texte-10),
                                                 cv2.FONT_HERSHEY_SIMPLEX, taille, couleur, epaisseur)
                         nb_scores+=1
@@ -668,7 +685,7 @@ class SmartMov:
                     list_return.append(pred)
         return tuple(list_return)
     
-    def multi_display(self,images,gt=None,display=['nb_obj'],metrics_to_display=None,gt_type=None,couleur_texte=(255,0,0),video_location=None,name_video='no_name',fps_video=20.0,photo_location=None,models_used='all',return_scores=True):
+    def multi_display(self,images,gt=None,gt_classes=None,display=['nb_obj'],metrics_to_display=None,gt_type=None,couleur_texte=(255,0,0),video_location=None,name_video='no_name',fps_video=20.0,photo_location=None,models_used='all',return_scores=True):
         """
         Renvoie les métriques demandées et crée une vidéo ou enregistre une série de photos traitées.
 
@@ -681,6 +698,9 @@ class SmartMov:
              TODO : Ne fonctionne que pour des groundtruth de type 'bool'. Mettre en place pour les groundtruth de type 'instance'
              L'ordre des éléments de cette liste doit correspondre à celui des éléments de la liste images et doit être de la même longueur.
              Par défaut None (signifie que les scores ne seront pas calculés)
+        gt_classes : list utilisée pour faire l'évaluation de la correspondandce des classes, optionnel
+                     Nécéssaire si scores!=None et 'class' est dans metrics_to_display
+                     Par défaut None
         display : list, optionnel
                   Liste des informations à afficher sur l'image. Doit être parmi ['scores','temps','nb_obj','num_im'].
                   Les scores seront affichés en bas à droite et les autres informations en gaut à gauche
@@ -705,8 +725,8 @@ class SmartMov:
                          Par défaut None
         name_video : string, optionnel
                      Nom du fichier de la vidéo. Par défaut "no_name.avi"
-        fps_video : float, optionnel
-                    Nombre de fps dans le vidéo crée. Par défaut 20.0.
+        fps_video : float ou list, optionnel
+                    Nombre de fps dans la ou les vidéos crées (une vidéo est crée par élément de la liste). Par défaut 20.0.
         photo_location : string, optionnel
                          Nécéssaire si les photos sont souhaitées en .jpg en sortie. Coorespond au dossier dans lequel enregsitrer les photos.
                          Si None, aucune photo n'est enregistrée.
@@ -766,7 +786,7 @@ class SmartMov:
             if first_image==False:
                 new_color = get_new_colors(list_pred,list_color,models_used=models_used)
             
-            im_vid,new_former_color,evaluat,pred = self.single_display(inp,predic=pred,gt=gt0, temps_predic=tf, display=display,
+            im_vid,new_former_color,evaluat,pred = self.single_display(inp,predic=pred,gt=gt0, gt_classes=gt_classes[i],temps_predic=tf, display=display,
                                                                            metrics_to_display=metrics_to_display,gt_type=gt_type,
                                                                            models_used=models_used,num_im=i+1,colors=new_color,couleur_texte=couleur_texte,
                                                                            return_colors=True, return_scores=True,return_pred=True)
@@ -786,18 +806,34 @@ class SmartMov:
             if not os.path.exists(video_location):
                 os.mkdir(video_location)
                 print("Dossier video_location non existant. Création réussie.")
-            if name_video.split('.')[-1]!='avi':
-                FILE_NAME = os.path.join(video_location,name_video+".avi")
-            else:
-                FILE_NAME = os.path.join(video_location,name_video)
             
-            fourcc = cv2.VideoWriter_fourcc(*"MJPG")
-            out = cv2.VideoWriter(FILE_NAME,fourcc, fps_video, (shape_vid[1],shape_vid[0]))
-            
-            for i in range(len(vid)):
-                out.write(cv2.cvtColor(vid[i],cv2.COLOR_RGB2BGR))
-                barre(i,len(vid))
-            out.release()
+            if isinstance(fps_video,list): # Si plusieurs fps
+                for f in fps_video:
+                    if name_video.split('.')[-1]!='avi':
+                        FILE_NAME = os.path.join(video_location,name_video+"_{}_fps".format(int(np.floor(f)))+".avi")
+                    else:
+                        FILE_NAME = os.path.join(video_location,name_video.split('.avi')[0]+"_{}_fps".format(int(np.floor(f)))+".avi")
+                    
+                    fourcc = cv2.VideoWriter_fourcc(*"MJPG")
+                    out = cv2.VideoWriter(FILE_NAME,fourcc, f, (shape_vid[1],shape_vid[0]))
+                    
+                    for i in range(len(vid)):
+                        out.write(cv2.cvtColor(vid[i],cv2.COLOR_RGB2BGR))
+                        barre(i,len(vid))
+                    out.release()
+            else: # Si un seul fps donné
+                if name_video.split('.')[-1]!='avi':
+                    FILE_NAME = os.path.join(video_location,name_video+".avi")
+                else:
+                    FILE_NAME = os.path.join(video_location,name_video)
+                
+                fourcc = cv2.VideoWriter_fourcc(*"MJPG")
+                out = cv2.VideoWriter(FILE_NAME,fourcc, fps_video, (shape_vid[1],shape_vid[0]))
+                
+                for i in range(len(vid)):
+                    out.write(cv2.cvtColor(vid[i],cv2.COLOR_RGB2BGR))
+                    barre(i,len(vid))
+                out.release()
         
         if photo_location is not None:
             if not os.path.exists(photo_location):
@@ -828,12 +864,14 @@ class SmartMov:
         utils.inser_titre('A12','IoU Score mean',s1)
         utils.inser_titre('A15','Rect mean',s1)
         utils.inser_titre('A18','Masks mean',s1)
+        utils.inser_titre('A21','Classes mean',s1)
         utils.inser_soustitre('E2','Accuracy',s1)
         utils.inser_soustitre('A6','Recall',s1)
         utils.inser_soustitre('C10','Interval',s1)
         utils.inser_soustitre('C13','Interval',s1)
         utils.inser_soustitre('C16','Interval',s1)
         utils.inser_soustitre('C19','Interval',s1)
+        utils.inser_soustitre('C22','Interval',s1)
         
         for i,name in enumerate(metrics_to_display):
             if name=='iou':
@@ -910,6 +948,21 @@ class SmartMov:
                     eps = 1.96*np.sqrt(masks_mean*(1-masks_mean)/len(results[i]))
                     utils.inser_val_it('D19',masks_mean-eps,s1)
                     utils.inser_val_it('E19',masks_mean+eps,s1)
+            elif name=='class':
+                class_mean=np.mean(results[i])
+                if disp_figure and isinstance(results[i],list):
+                    fig_class=plt.figure()
+                    plt.title("Classes")
+                    plt.plot(results[i])
+                    plt.xlabel("Frames")
+                    plt.ylabel("Classes")
+                    plt.close('all')
+                    utils.inser_fig(fig_class,'Classes',750,10,200,150,s1)
+                utils.inser_val('E21',class_mean,s1)
+                if isinstance(results[i],list):
+                    eps = 1.96*np.sqrt(class_mean*(1-class_mean)/len(results[i]))
+                    utils.inser_val_it('D22',class_mean-eps,s1)
+                    utils.inser_val_it('E22',class_mean+eps,s1)
         
         if bool_new:
             bk.save(nom_fichier)

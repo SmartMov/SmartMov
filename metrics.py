@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mrcnn import visualize
+from operator import itemgetter
 
 def res_gt(dataset,indice_im,class_names,viz=False):
     """
@@ -303,3 +304,54 @@ def f1_score(mat):
     if 2*mat[0,0]+mat[1,0]+mat[0,1]==0:
         return 1.0
     return 2*mat[0,0]/(2*mat[0,0]+mat[1,0]+mat[0,1])
+
+def noter_metrique_classificaion(liste):
+    note=0
+    for i in range(len(liste)):
+        note+=liste[i][1]
+    return note
+
+def metrique_classification (pred,num_class1,nb_occurence_gt1):
+    
+    num_class = list(num_class1)
+    nb_occurence_gt = list(nb_occurence_gt1)
+    
+    pred1=pred[0]
+    data=[]
+    if pred1['rois'] is []:
+        data=[]
+    else:
+        for i in range(pred1['rois'].shape[0]):
+            data.append((pred1['class_ids'][i],pred1['scores'][i]))
+    
+    assert len(num_class)==len(nb_occurence_gt), "Il faut que chaque classe est un nombre d'objets correspondant dans la groundtruth"
+    
+    data_tri=sorted(data,key=itemgetter(1),reverse=True) #tri proba
+    
+    bien_class=[]
+    naurait_pas_du=[]
+    aurait_du=[]
+    
+    for i,value in enumerate(num_class):
+        for j in range(len(data_tri)):
+            if (data_tri[j][0]==value):
+                if (nb_occurence_gt[i]==0):
+                    naurait_pas_du.append(data_tri[j])
+                else:   
+                    bien_class.append(data_tri[j])
+                    nb_occurence_gt[i]-=1 
+                    
+    for i,value in enumerate(nb_occurence_gt):      
+        if (nb_occurence_gt[i]>0):
+            aurait_du.append([num_class[i],value])
+
+    n_bien=noter_metrique_classificaion(bien_class)
+    n_naur=noter_metrique_classificaion(naurait_pas_du)
+    n_aur=noter_metrique_classificaion(aurait_du)
+    
+    if (2*n_bien+n_naur+n_aur)==0 :
+        class_score = 1
+    else :
+        class_score=2*n_bien/(2*n_bien+n_naur+n_aur)
+    
+    return class_score

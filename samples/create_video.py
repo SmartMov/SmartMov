@@ -44,13 +44,24 @@ smartmov.load_models('rcnn', model_rcnn=MODELS_MASKRCNN_DIR+'mask_rcnn_person_ca
                      config=config, class_names=class_names)
 smartmov.load_models('unet', model_unet=MODELS_UNET_DIR+"unet_highway.h5", shape_unet=s, timestep=TIMESTEP)
 
-#%% Evaluation
+#%% Load images
 
 IMAGES_DIR = os.path.join(DATASET_DIR,"highway/input/") # Dossier des images à évaluer (doivent correspondre au U-Net chargé avant)
 GT_DIR = os.path.join(DATASET_DIR,"highway/groundtruth/") # Dossier de la groundtruth correspondante à ces images
 
-input_list = sorted_nicely(glob.glob(IMAGES_DIR+"*.jpg"))[:100] # Liste ordonnée des images à évaluer
-gt_list = sorted_nicely(glob.glob(GT_DIR+"*.png"))[:100] # Liste ordonnée des groundtruth
+input_list = sorted_nicely(glob.glob(IMAGES_DIR+"*.jpg"))[:20] # Liste ordonnée des images à évaluer
+gt_list = sorted_nicely(glob.glob(GT_DIR+"*.png"))[:20] # Liste ordonnée des groundtruth
+
+#%% Création groundtruth pour évaluer la correspondance des classes
+hw_img=[39,55,75,16,5,26,5,88,42]
+hw_nb=[5,4,5,6,7,6,5,6,5]
+
+nb_occurence_gt_hw=[]
+for i in range (len(hw_img)):
+    for j in range (hw_img[i]):
+        nb_occurence_gt_hw.append(([1,2],[0,hw_nb[i]]))
+
+gt_classes = nb_occurence_gt_hw[:20]
 
 #%% Création de la vidéo
 
@@ -68,8 +79,10 @@ PHOTOS_DIR = os.path.join(RESULTS_DIR,"photos/") # Dossier pour enregsitrer les 
 
 # Création d'une vidéo à partir des images et des groudntruth données, avec affichées les métriques spécifiées
 # Cette vidéo sera enregistrée à l'emplacement video_location, aura pour nom name_video et les fps sont spécifiés
-metric = smartmov.multi_display(input_list,gt_list,display=['nb_obj','temps','num_im','scores'],metrics_to_display=['iou','conf','f1'],
-                                gt_type='bool',couleur_texte=(255,255,0),video_location=VIDEOS_DIR,name_video="highway_example",fps_video=10.0)
+metric = smartmov.multi_display(input_list,gt_list,gt_classes=gt_classes,display=['nb_obj','temps','num_im','scores'],
+                                metrics_to_display=['iou','conf','f1','class'],
+                                gt_type='bool',couleur_texte=(255,255,0),video_location=VIDEOS_DIR,name_video="highway_example",
+                                fps_video=[10.0,15.0])
 
 #%% Excel creation
 RESULTS_DIR = os.path.join(ROOT_DIR,"results/")
@@ -84,4 +97,4 @@ if not os.path.exists(EXCEL_DIR):
 
 EXCEL_FILE = os.path.join(EXCEL_DIR,"res_example.xlsx")
 
-smartmov.create_excel(metric,metrics_to_display=['iou','conf','f1'],nom_fichier=EXCEL_FILE,nom_feuille="Test_video")
+smartmov.create_excel(metric,metrics_to_display=['iou','conf','f1','class'],nom_fichier=EXCEL_FILE,nom_feuille="Test_video")

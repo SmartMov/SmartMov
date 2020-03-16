@@ -52,6 +52,8 @@ GT_DIR = os.path.join(ROOT_DIR,"dataset_test/groundtruth/") # Dossier de la grou
 input_list = sorted_nicely(glob.glob(IMAGES_DIR+"*.jpg")) # Liste ordonnée des images à évaluer
 gt_list = sorted_nicely(glob.glob(GT_DIR+"*.png")) # Liste ordonnée des groundtruth
 
+gt_classes = [(1,2),(0,5)] # Signifie que la vérité terrain est composée de 0 objets de classe 1 (humains) et 5 objets de classe 2 (voitures)
+
 im = []
 for f in input_list:
     im.append(plt.imread(f)) # Chargement des images
@@ -67,11 +69,11 @@ if gt.dtype!=np.bool:
 
 pred = smartmov.predict(im) # Prédiction avec les images chargées
 
-metric = smartmov.evaluate(pred,gt,metrics_to_compute=['iou','conf','f1'], gt_type='bool') # Evaluation
+metric = smartmov.evaluate(pred,gt,gt_classes=gt_classes,metrics_to_compute=['iou','conf','f1','class'], gt_type='bool') # Evaluation
 
 #%% Evaluation avec image traitée
 
-image_traitee,metric = smartmov.single_display(im,gt=gt,display=['nb_obj','scores','temps'],metrics_to_display=['iou','conf','f1'],
+image_traitee,metric = smartmov.single_display(im,gt=gt,gt_classes=gt_classes,display=['nb_obj','scores','temps'],metrics_to_display=['iou','conf','f1','class'],
                                                         gt_type='bool',return_scores=True) # Prédiction, évaluation et création de l'image traitée
 
 plt.figure()
@@ -91,4 +93,4 @@ if not os.path.exists(EXCEL_DIR):
 
 EXCEL_FILE = os.path.join(EXCEL_DIR,"res_example.xlsx") # Chemin du Excel à créer ou à modifier
 
-smartmov.create_excel(metric,metrics_to_display=['iou','conf','f1'],nom_fichier=EXCEL_FILE,nom_feuille="Test_evaluate")
+smartmov.create_excel(metric,metrics_to_display=['iou','conf','f1','class'],nom_fichier=EXCEL_FILE,nom_feuille="Test_evaluate")
