@@ -311,11 +311,19 @@ def noter_metrique_classificaion(liste):
         note+=liste[i][1]
     return note
 
-def metrique_classification (pred,num_class1,nb_occurence_gt1):
+def metrique_classification (pred,num_class1,nb_occurence_gt1=None,gt_instance=None):
+    
+    assert (nb_occurence_gt1 is not None) or (gt_instance is not None), "Aucune groundtruth donnée"
     
     num_class = list(num_class1)
-    nb_occurence_gt = list(nb_occurence_gt1)
-    
+    if nb_occurence_gt1 is not None: # Cas ou la gt est bool
+        nb_occurence_gt = list(nb_occurence_gt1)
+    else: # Cas ou la groundtruth est consitutuée d'instances
+        nb_occurence_gt=list(np.zeros(len(num_class1),dtype=np.int32))
+        for i in range(gt_instance[0].shape[-1]):
+            if gt_instance[1][i]!=-1: # Coco classe certains éléments comme "foule=-1", ici on ne les compte pas
+                nb_occurence_gt[num_class.index(gt_instance[1][i])]+=1
+        
     pred1=pred[0]
     data=[]
     if pred1['rois'] is []:

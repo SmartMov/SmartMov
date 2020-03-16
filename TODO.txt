@@ -1,4 +1,0 @@
-- multi fps gestion multi_display() method  	FAIT
-- include class metrics 			FAIT si la métrique de Mael bug pas (à vérifier par ex quand pred vide ou gt vide)
-- json gt in multi_display() method
-- json_gt in class metric

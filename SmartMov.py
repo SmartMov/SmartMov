@@ -442,7 +442,8 @@ class SmartMov:
         gt : groundtruth
         gt_classes : groundtruth pour la correspondance des classes.
                      Nécessaire si 'class' est dans metrics_to_compute.
-                     De la forme (numéros des classes,nombre d'instance dans l'image pour chaque classe)
+                     De la forme (numéros des classes,nombre d'instance dans l'image pour chaque classe) si gt_type=='bool'
+                     De la forme [numéros des classes] si gt_type=='instance'
         models_used : models utilisés pour faire la prédiction
 
         Returns
@@ -466,7 +467,12 @@ class SmartMov:
         else:
             pred3=pred
         
-        s = gt.shape     
+        if gt_type=='bool':
+            gt3=gt
+        elif gt_type=='instance':
+            gt3=gt[0]
+        
+        s = gt3.shape     
         if np.array(pred3[0]['masks']).shape[0]==0: # Si liste vide
             pred3[0]['masks'] = np.expand_dims(np.zeros(s,dtype=np.bool),axis=-1)
         
@@ -474,7 +480,7 @@ class SmartMov:
             pred3[0]['masks'] = np.expand_dims(np.zeros(s,dtype=np.bool),axis=-1)
 
         if gt_type=='instance':
-            gt_rois = metrics.compute_rect_with_masks(gt)
+            gt_rois = metrics.compute_rect_with_masks(gt3)
         else:
             gt_rois = None
             
@@ -485,36 +491,36 @@ class SmartMov:
                 for i in range(pred3[0]['masks'].shape[-1]):
                     pred2 = pred2 | pred3[0]['masks'][...,i]
                 if gt_type=='bool':
-                    assert len(gt.shape)==2, "La GT doit avoir deux dimensions dans le cas de gt_type='bool'"
-                    gt2 = gt
+                    assert len(gt3.shape)==2, "La GT doit avoir deux dimensions dans le cas de gt_type='bool'"
+                    gt2 = gt3
                 elif gt_type=='instance':
-                    gt2 = gt[...,0]
-                    for i in range(gt.shape[-1]):
-                        gt2 = gt2 | gt[...,i]
+                    gt2 = gt3[...,0]
+                    for i in range(gt3.shape[-1]):
+                        gt2 = gt2 | gt3[...,i]
                 self.last_metrics.append(metrics.compute_mask_iou(gt2,pred2))
             elif met=='conf':
                 pred2 = pred3[0]['masks'][...,0]
                 for i in range(pred3[0]['masks'].shape[-1]):
                     pred2 = pred2 | pred3[0]['masks'][...,i]
                 if gt_type=='bool':
-                    assert len(gt.shape)==2, "La GT doit avoir deux dimensions dans le cas de gt_type='bool'"
-                    gt2 = gt
+                    assert len(gt3.shape)==2, "La GT doit avoir deux dimensions dans le cas de gt_type='bool'"
+                    gt2 = gt3
                 elif gt_type=='instance':
-                    gt2 = gt[...,0]
-                    for i in range(gt.shape[-1]):
-                        gt2 = gt2 | gt[...,i]
+                    gt2 = gt3[...,0]
+                    for i in range(gt3.shape[-1]):
+                        gt2 = gt2 | gt3[...,i]
                 self.last_metrics.append(metrics.conf(pred2,gt2))
             elif met=='f1':
                 pred2 = pred3[0]['masks'][...,0]
                 for i in range(pred3[0]['masks'].shape[-1]):
                     pred2 = pred2 | pred3[0]['masks'][...,i]
                 if gt_type=='bool':
-                    assert len(gt.shape)==2, "La GT doit avoir deux dimensions dans le cas de gt_type='bool'"
-                    gt2 = gt
+                    assert len(gt3.shape)==2, "La GT doit avoir deux dimensions dans le cas de gt_type='bool'"
+                    gt2 = gt3
                 elif gt_type=='instance':
-                    gt2 = gt[...,0]
-                    for i in range(gt.shape[-1]):
-                        gt2 = gt2 | gt[...,i]
+                    gt2 = gt3[...,0]
+                    for i in range(gt3.shape[-1]):
+                        gt2 = gt2 | gt3[...,i]
                 mat_conf=metrics.conf(pred2,gt2)
                 self.last_metrics.append(metrics.f1_score(mat_conf))
             elif met=='rect':
@@ -522,9 +528,13 @@ class SmartMov:
                 self.last_metrics.append(metrics.score_box(pred3[0]['rois'],gt_rois,s))
             elif met=='masks':
                 assert gt_type=='instance', "Pour l'évaluation sur les {}, il faut des gt de type 'instance'".format(met)
-                self.last_metrics.append(metrics.score_mask(pred3[0]['masks'],gt,pred3[0]['rois'],gt_rois,s))
+                self.last_metrics.append(metrics.score_mask(pred3[0]['masks'],gt3,pred3[0]['rois'],gt_rois,s))
             elif met=='class':
-                self.last_metrics.append(metrics.metrique_classification(pred3,gt_classes[0],gt_classes[1]))
+                if gt_type=='bool':
+                    assert gt_classes is not None, "L'évaluation sur la correspondance des classes ne peut pas être faite si gt_classes==None"
+                    self.last_metrics.append(metrics.metrique_classification(pred3,gt_classes[0],nb_occurence_gt1=gt_classes[1]))
+                elif gt_type=='instance':
+                    self.last_metrics.append(metrics.metrique_classification(pred3,gt_classes,gt_instance=gt))
                 
         return self.last_metrics
     
@@ -544,6 +554,8 @@ class SmartMov:
              Par défaut None (pas besoin de groundtruth)
         gt_classes : groundtruth utilisée pour faire l'évaluation de la correspondandce des classes, optionnel
                      Nécéssaire si scores!=None et 'class' est dans metrics_to_display
+                     De la forme (numéros des classes,nombre d'instance dans l'image pour chaque classe) si gt_type=='bool'
+                     De la forme [numéros des classes] si gt_type=='instance'
                      Par défaut None
         temps_predic : int, optionnel (nécéssaire si predic!=None et si 'temps' est dans display)
                        Dans le cas ou la prédiciton a été faite auparavant (predic != None) et que l'on souhaite afficher le temps d'inférence sur l'image
@@ -590,6 +602,11 @@ class SmartMov:
 
         """
         
+        if len(inp.shape)==3:
+            inp2=np.expand_dims(inp,axis=0)
+        else:
+            inp2=inp
+        
         nb_obj,scores=False,False
         for disp in display:
             assert disp in ['scores','temps','num_im','nb_obj'], "{} n'est pas un paramètre accepté".format(disp)
@@ -600,29 +617,29 @@ class SmartMov:
         assert models_used in ['all','rcnn'],"models_used doit être 'all' ou 'rcnn'"
         
         couleur=couleur_texte
-        taille,epaisseur,offset_texte,debut_gauche,debut_bas = constants_image(inp[-1])
+        taille,epaisseur,offset_texte,debut_gauche,debut_bas = constants_image(inp2[-1])
         
         if nb_obj:
             current_display = 1
         else:
             current_display = 0
-        offset_horiz_scores = inp[-1].shape[1]-debut_bas
+        offset_horiz_scores = inp2[-1].shape[1]-debut_bas
                 
         if predic is None:
             t0=time.time()
-            pred = self.predict(inp,models_to_use=models_used)
+            pred = self.predict(inp2,models_to_use=models_used)
             tf=time.time()-t0
         else:
             pred=predic
             tf=temps_predic
         
         if return_colors:
-            im_output,choosen_colors = self.visualize(inp[-1],pred,viz=False,models_used=models_used,
+            im_output,choosen_colors = self.visualize(inp2[-1],pred,viz=False,models_used=models_used,
                                                       colors=colors,return_colors=return_colors,
                                                       disp_nb_obj=nb_obj,offset=debut_gauche,taille=taille,
                                                       epaisseur=epaisseur,couleur=couleur)
         else:
-            im_output = self.visualize(inp[-1],pred,viz=False,models_used=models_used,
+            im_output = self.visualize(inp2[-1],pred,viz=False,models_used=models_used,
                                         colors=colors,return_colors=return_colors,
                                         disp_nb_obj=nb_obj,offset=debut_gauche,taille=taille,
                                         epaisseur=epaisseur,couleur=couleur)
@@ -633,7 +650,7 @@ class SmartMov:
                 assert metrics_to_display is not None, "Une liste des métriques à afficher doit être donnée"
                 assert gt_type is not None, "Le type de groundtruth doit être spécifié (bool ou instance)"
                 if 'class' in metrics_to_display:
-                    assert gt_classes is not None, "L'évaluation sur la correspondance des classes ne peut pas être faite si gt_classes==None"
+                    assert (gt_classes is not None) or gt_type=='instance', "L'évaluation sur la correspondance des classes ne peut pas être faite si gt_classes==None"
                 evaluat = self.evaluate(pred,gt,gt_classes=gt_classes,models_used=models_used,metrics_to_compute=metrics_to_display, gt_type=gt_type)
                 nb_scores=0
                 for i,met in enumerate(evaluat):
@@ -685,14 +702,15 @@ class SmartMov:
                     list_return.append(pred)
         return tuple(list_return)
     
-    def multi_display(self,images,gt=None,gt_classes=None,display=['nb_obj'],metrics_to_display=None,gt_type=None,couleur_texte=(255,0,0),video_location=None,name_video='no_name',fps_video=20.0,photo_location=None,models_used='all',return_scores=True):
+    def multi_display(self,images,gt=None,gt_classes=None,indices_dataset=None,display=['nb_obj'],metrics_to_display=None,gt_type=None,couleur_texte=(255,0,0),video_location=None,name_video='no_name',fps_video=20.0,photo_location=None,models_used='all',return_scores=True):
         """
         Renvoie les métriques demandées et crée une vidéo ou enregistre une série de photos traitées.
 
         Parameters
         ----------
-        images : list
-                 Liste contenant les chemins de toutes les images à traiter.
+        images : list ou mrcnn.utils.Dataset
+                 Liste contenant les chemins de toutes les images à traiter
+                 (ou) Objet contenant les images et masques à traiter
         gt : list, optionnel
              Liste contenant les chemins de toutes les groundtruth des images à traiter.
              TODO : Ne fonctionne que pour des groundtruth de type 'bool'. Mettre en place pour les groundtruth de type 'instance'
@@ -700,7 +718,12 @@ class SmartMov:
              Par défaut None (signifie que les scores ne seront pas calculés)
         gt_classes : list utilisée pour faire l'évaluation de la correspondandce des classes, optionnel
                      Nécéssaire si scores!=None et 'class' est dans metrics_to_display
+                     Eléments de la forme (numéros des classes,nombre d'instance dans l'image pour chaque classe) si gt_type=='bool'
+                     Eléments de la forme [numéros des classes] si gt_type=='instance'
                      Par défaut None
+        indices_dataset : list, optionnel
+                          indices des images de la dataset à traiter (si None toute la dataset sera traitée) (pas bornes)
+                          Par défaut None
         display : list, optionnel
                   Liste des informations à afficher sur l'image. Doit être parmi ['scores','temps','nb_obj','num_im'].
                   Les scores seront affichés en bas à droite et les autres informations en gaut à gauche
@@ -759,45 +782,148 @@ class SmartMov:
         for i in range(len(metrics_to_display)):
                 met_final.append([])
         
-        for i,im in enumerate(images):
-            if i==len(images)-self.timestep:
-                break
-            inp = []
-            for im2 in images[i:i+self.timestep]:
-                inp.append(plt.imread(im2))
-            inp = np.array(inp)
-            if gt is not None:
-                gt0 = np.array(PIL.Image.open(gt[i+self.timestep-1]))
-                if gt0.dtype!=np.bool:
-                    gt0[(gt0<255) & (gt0>1)] = 0
-                    gt0[gt0>0] = 1
-                    gt0 = gt0.astype(np.bool)
-            
-            t0=time.time()
-            pred = self.predict(inp,models_to_use=models_used)
-            tf=time.time()-t0
-            
-            if first_image==False:
-                if len(list_pred)==nb_pred_tracking:
-                    del list_pred[0]
-                    del list_color[0]
-            list_pred.append(pred)
-            
-            if first_image==False:
-                new_color = get_new_colors(list_pred,list_color,models_used=models_used)
-            
-            im_vid,new_former_color,evaluat,pred = self.single_display(inp,predic=pred,gt=gt0, gt_classes=gt_classes[i],temps_predic=tf, display=display,
-                                                                           metrics_to_display=metrics_to_display,gt_type=gt_type,
-                                                                           models_used=models_used,num_im=i+1,colors=new_color,couleur_texte=couleur_texte,
-                                                                           return_colors=True, return_scores=True,return_pred=True)
-            for j in range(len(metrics_to_display)):
-                met_final[j].append(evaluat[j])
+        if isinstance(images,list):
+            for i,im in enumerate(images):
+                if models_used=='all':
+                    if i==len(images)-self.timestep:
+                        break
+                elif models_used=='rcnn':
+                    if i==len(images):
+                        break
+                if models_used=='all':
+                    inp = []
+                    for im2 in images[i:i+self.timestep]:
+                        inp.append(plt.imread(im2))
+                    inp = np.array(inp)
+                    if gt is not None:
+                        gt0 = np.array(PIL.Image.open(gt[i+self.timestep-1]))
+                        if gt0.dtype!=np.bool:
+                            gt0[(gt0<255) & (gt0>1)] = 0
+                            gt0[gt0>0] = 1
+                            gt0 = gt0.astype(np.bool)
+                elif models_used=='rcnn':
+                    inp = plt.imread(images[i])
+                    inp = np.expand_dims(inp,axis=0)
+                    if gt_type=='bool':
+                        if gt is not None:
+                            gt0 = np.array(PIL.Image.open(gt[i]))
+                            if gt0.dtype!=np.bool:
+                                gt0[(gt0<255) & (gt0>1)] = 0
+                                gt0[gt0>0] = 1
+                                gt0 = gt0.astype(np.bool)
+                    elif gt_type=='instance':
+                        gt0 = gt.load_mask(i)
+                
+                t0=time.time()
+                pred = self.predict(inp,models_to_use=models_used)
+                tf=time.time()-t0
+                
+                if first_image==False:
+                    if len(list_pred)==nb_pred_tracking:
+                        del list_pred[0]
+                        del list_color[0]
+                list_pred.append(pred)
+                
+                if first_image==False:
+                    new_color = get_new_colors(list_pred,list_color,models_used=models_used)
                     
-            list_color.append(new_former_color)
-            
-            vid.append(im_vid)
-            barre(i,len(images)-self.timestep)
-            first_image=False
+                if gt_type=='instance':
+                    if isinstance(gt_classes,list):
+                        gt_classes2=gt_classes[i]
+                    else:
+                        gt_classes2=gt_classes
+                else:
+                    gt_classes2=gt_classes
+                
+                im_vid,new_former_color,evaluat,pred = self.single_display(inp,predic=pred,gt=gt0, gt_classes=gt_classes[i],temps_predic=tf, display=display,
+                                                                               metrics_to_display=metrics_to_display,gt_type=gt_type,
+                                                                               models_used=models_used,num_im=i+1,colors=new_color,couleur_texte=couleur_texte,
+                                                                               return_colors=True, return_scores=True,return_pred=True)
+                for j in range(len(metrics_to_display)):
+                    met_final[j].append(evaluat[j])
+                        
+                list_color.append(new_former_color)
+                
+                vid.append(im_vid)
+                if models_used=='all':
+                    barre(i,len(images)-self.timestep)
+                elif models_used=='rcnn':
+                    barre(i,len(images))
+                first_image=False
+                
+        else: # Si objet dataset
+            for i,im in enumerate(indices_dataset):
+                if models_used=='all':
+                    if i==len(indices_dataset)-self.timestep:
+                        break
+                elif models_used=='rcnn':
+                    if i==len(indices_dataset):
+                        break
+                
+                if models_used=='all':
+                    inp = []
+                    for im2 in indices_dataset[i:i+self.timestep]:
+                        inp.append(images.load_image(im2))
+                    inp = np.array(inp)
+                    if gt_type=='bool':
+                        if gt is not None:
+                            gt0 = np.array(PIL.Image.open(gt[i+self.timestep-1]))
+                            if gt0.dtype!=np.bool:
+                                gt0[(gt0<255) & (gt0>1)] = 0
+                                gt0[gt0>0] = 1
+                                gt0 = gt0.astype(np.bool)
+                    elif gt_type=='instance':
+                        gt0 = images.load_mask(i+self.timestep-1)
+                        
+                elif models_used=='rcnn':
+                    inp = images.load_image(indices_dataset[i])
+                    inp = np.expand_dims(inp,axis=0)
+                    if gt_type=='bool':
+                        if gt is not None:
+                            gt0 = np.array(PIL.Image.open(gt[i]))
+                            if gt0.dtype!=np.bool:
+                                gt0[(gt0<255) & (gt0>1)] = 0
+                                gt0[gt0>0] = 1
+                                gt0 = gt0.astype(np.bool)
+                    elif gt_type=='instance':
+                        gt0 = images.load_mask(i)
+                
+                t0=time.time()
+                pred = self.predict(inp,models_to_use=models_used)
+                tf=time.time()-t0
+                
+                if first_image==False:
+                    if len(list_pred)==nb_pred_tracking:
+                        del list_pred[0]
+                        del list_color[0]
+                list_pred.append(pred)
+                
+                if first_image==False:
+                    new_color = get_new_colors(list_pred,list_color,models_used=models_used)
+                
+                if gt_type=='instance':
+                    if isinstance(gt_classes[0],list):
+                        gt_classes2=gt_classes[i]
+                    else:
+                        gt_classes2=gt_classes
+                else:
+                    gt_classes2=gt_classes
+                                
+                im_vid,new_former_color,evaluat,pred = self.single_display(inp,predic=pred,gt=gt0, gt_classes=gt_classes2,temps_predic=tf, display=display,
+                                                                               metrics_to_display=metrics_to_display,gt_type=gt_type,
+                                                                               models_used=models_used,num_im=i+1,colors=new_color,couleur_texte=couleur_texte,
+                                                                               return_colors=True, return_scores=True,return_pred=True)
+                for j in range(len(metrics_to_display)):
+                    met_final[j].append(evaluat[j])
+                        
+                list_color.append(new_former_color)
+                
+                vid.append(im_vid)
+                if models_used=='all':
+                    barre(i,len(indices_dataset)-self.timestep)
+                elif models_used=='rcnn':
+                    barre(i,len(indices_dataset))
+                first_image=False
         
         print()
         
