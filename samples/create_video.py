@@ -71,10 +71,6 @@ PHOTOS_DIR = os.path.join(RESULTS_DIR,"photos/") # Dossier pour enregsitrer les 
 metric = smartmov.multi_display(input_list,gt_list,display=['nb_obj','temps','num_im','scores'],metrics_to_display=['iou','conf','f1'],
                                 gt_type='bool',couleur_texte=(255,255,0),video_location=VIDEOS_DIR,name_video="highway_example",fps_video=10.0)
 
-iou,mat_conf,f1 = metric[0],metric[1],metric[2] # Unpacking des métriques calculées dans trois variables distinctes
-
-mat_conf_moy = np.mean(mat_conf,axis=0)
-
 #%% Excel creation
 RESULTS_DIR = os.path.join(ROOT_DIR,"results/")
 if not os.path.exists(RESULTS_DIR):
@@ -88,4 +84,4 @@ if not os.path.exists(EXCEL_DIR):
 
 EXCEL_FILE = os.path.join(EXCEL_DIR,"res_example.xlsx")
 
-to_excel(EXCEL_FILE,"Results highway vid",mat_conf_moy,iou,f1)
+smartmov.create_excel(metric,metrics_to_display=['iou','conf','f1'],nom_fichier=EXCEL_FILE,nom_feuille="Test_video")

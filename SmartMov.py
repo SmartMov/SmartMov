@@ -20,6 +20,8 @@ from mrcnn import visualize
 import coco
 import unetlib
 from utils import constants_image, get_new_colors, barre
+import utils
+import xlwings as wg
 import PIL
 
 class SmartMov:
@@ -809,7 +811,110 @@ class SmartMov:
         if return_scores:
             return met_final
         
-            
+    def create_excel(self,results,metrics_to_display,nom_fichier,nom_feuille,disp_figure=True):
+        assert len(metrics_to_display)==len(results), "Toutes les métriques ne sont pas associées à leur nom"
+        
+        if os.path.isfile(nom_fichier):
+            bk = wg.Book(nom_fichier)
+            bool_new=False
+        else:
+            bk = wg.Book()
+            bool_new = True
+        
+        s1 = bk.sheets.add(nom_feuille)
+        
+        utils.inser_titre('A1','Confusion Matrix',s1)
+        utils.inser_titre('A9','F1-Score mean',s1)
+        utils.inser_titre('A12','IoU Score mean',s1)
+        utils.inser_titre('A15','Rect mean',s1)
+        utils.inser_titre('A18','Masks mean',s1)
+        utils.inser_soustitre('E2','Accuracy',s1)
+        utils.inser_soustitre('A6','Recall',s1)
+        utils.inser_soustitre('C10','Interval',s1)
+        utils.inser_soustitre('C13','Interval',s1)
+        utils.inser_soustitre('C16','Interval',s1)
+        utils.inser_soustitre('C19','Interval',s1)
+        
+        for i,name in enumerate(metrics_to_display):
+            if name=='iou':
+                iou_mean = np.mean(results[i])
+                if disp_figure and isinstance(results[i],list):
+                    fig_IOU=plt.figure()
+                    plt.title("IoU")
+                    plt.plot(results[i])
+                    plt.xlabel("Frames")
+                    plt.ylabel("IoU")
+                    plt.close('all')
+                    utils.inser_fig(fig_IOU,'IoU',350,10,200,150,s1)
+                utils.inser_val('E12',iou_mean,s1)
+                if isinstance(results[i],list):
+                    eps = 1.96*np.sqrt(iou_mean*(1-iou_mean)/len(results[i]))
+                    utils.inser_val_it('D13',iou_mean-eps,s1)
+                    utils.inser_val_it('E13',iou_mean+eps,s1)
+            elif name=='f1':
+                f1_mean=np.mean(results[i])
+                if disp_figure and isinstance(results[i],list):
+                    fig_F1=plt.figure()
+                    plt.title("F1-score")
+                    plt.plot(results[i])
+                    plt.xlabel("Frames")
+                    plt.ylabel("F1-score")
+                    plt.close('all')
+                    utils.inser_fig(fig_F1,'F1',350,160,200,150,s1)
+                utils.inser_val('E9',f1_mean,s1)
+                if isinstance(results[i],list):
+                    eps = 1.96*np.sqrt(f1_mean*(1-f1_mean)/len(results[i]))
+                    utils.inser_val_it('D10',f1_mean-eps,s1)
+                    utils.inser_val_it('E10',f1_mean+eps,s1)
+            elif name=='conf':
+                if isinstance(results[i],list):
+                    confu=np.mean(results[i],axis=0)
+                else:
+                    confu=results[i]
+                utils.inser_val_matrice('B3',confu[0,0],s1)
+                utils.inser_val_matrice('B4',confu[1,0],s1)
+                utils.inser_val_matrice('C3',confu[0,1],s1)
+                utils.inser_val_matrice('C4',confu[1,1],s1)
+                utils.inser_val('E3',confu[0,0]/(confu[0,0]+confu[0,1]),s1)
+                utils.inser_val('E4',confu[1,1]/(confu[1,0]+confu[1,1]),s1)
+                
+                utils.inser_val('B6',confu[0,0]/(confu[0,0]+confu[1,0]),s1)
+                utils.inser_val('C6',confu[1,1]/(confu[0,1]+confu[1,1]),s1)
+            elif name=='rect':
+                rect_mean=np.mean(results[i])
+                if disp_figure and isinstance(results[i],list):
+                    fig_rect=plt.figure()
+                    plt.title("Rect")
+                    plt.plot(results[i])
+                    plt.xlabel("Frames")
+                    plt.ylabel("Rect")
+                    plt.close('all')
+                    utils.inser_fig(fig_rect,'Rect',550,10,200,150,s1)
+                utils.inser_val('E15',rect_mean,s1)
+                if isinstance(results[i],list):
+                    eps = 1.96*np.sqrt(rect_mean*(1-rect_mean)/len(results[i]))
+                    utils.inser_val_it('D16',rect_mean-eps,s1)
+                    utils.inser_val_it('E16',rect_mean+eps,s1)
+            elif name=='masks':
+                masks_mean=np.mean(results[i])
+                if disp_figure and isinstance(results[i],list):
+                    fig_masks=plt.figure()
+                    plt.title("Masks")
+                    plt.plot(results[i])
+                    plt.xlabel("Frames")
+                    plt.ylabel("Masks")
+                    plt.close('all')
+                    utils.inser_fig(fig_masks,'Masks',550,160,200,150,s1)
+                utils.inser_val('E18',masks_mean,s1)
+                if isinstance(results[i],list):
+                    eps = 1.96*np.sqrt(masks_mean*(1-masks_mean)/len(results[i]))
+                    utils.inser_val_it('D19',masks_mean-eps,s1)
+                    utils.inser_val_it('E19',masks_mean+eps,s1)
+        
+        if bool_new:
+            bk.save(nom_fichier)
+        else:
+            bk.save()
             
     def visualize(self, im_orig, pred, models_used='all', colors=None, return_colors=False, viz=True, disp_nb_obj=True, offset=20, taille=0.5, epaisseur=1,couleur=(255,0,0)):
         """

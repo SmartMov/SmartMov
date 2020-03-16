@@ -67,7 +67,7 @@ if gt.dtype!=np.bool:
 
 pred = smartmov.predict(im) # Prédiction avec les images chargées
 
-iou,mat_conf,f1 = smartmov.evaluate(pred,gt,metrics_to_compute=['iou','conf','f1'], gt_type='bool') # Evaluation
+metric = smartmov.evaluate(pred,gt,metrics_to_compute=['iou','conf','f1'], gt_type='bool') # Evaluation
 
 #%% Evaluation avec image traitée
 
@@ -77,8 +77,6 @@ image_traitee,metric = smartmov.single_display(im,gt=gt,display=['nb_obj','score
 plt.figure()
 plt.imshow(image_traitee) # Affichage de l'image
 plt.title('Résultat')
-
-iou,mat_conf,f1 = metric[0],metric[1],metric[2] # Unpacking des métriques calculées dans trois variables distinctes
 
 #%% Résultats dans un Excel
 RESULTS_DIR = os.path.join(ROOT_DIR,"results/")
@@ -93,4 +91,4 @@ if not os.path.exists(EXCEL_DIR):
 
 EXCEL_FILE = os.path.join(EXCEL_DIR,"res_example.xlsx") # Chemin du Excel à créer ou à modifier
 
-to_excel(EXCEL_FILE,"Results highway",mat_conf,iou,f1) # Ecriture des résultats dans le Excel
+smartmov.create_excel(metric,metrics_to_display=['iou','conf','f1'],nom_fichier=EXCEL_FILE,nom_feuille="Test_evaluate")
