@@ -12,11 +12,12 @@ sys.path.append(ROOT_DIR)
 from mrcnn.config import Config
 from SmartMov import SmartMov
 import coco
+from utils import sorted_nicely
 
 class InferenceConfig(Config):
     GPU_COUNT = 1
     IMAGES_PER_GPU = 1
-    DETECTION_MIN_CONFIDENCE = 0.9
+    DETECTION_MIN_CONFIDENCE = 0.85
     NUM_CLASSES = 1 + 2 # Background + Person + Cars
     NAME = 'coco_person_car'
     STEPS_PER_EPOCH = 2000 # Nombre d'images dans la datset à utiliser pour l'entrainement
@@ -38,41 +39,44 @@ TIMESTEP = 5
 #%% Création du détecteur
 smartmov = SmartMov()
 
-#%% Load Mask-RCNN
-smartmov.load_models('unet', model_unet=MODELS_UNET_DIR+"unet_skating.h5", shape_unet=s, timestep=TIMESTEP)
+#%% Chargement du U-Net
+smartmov.load_models('unet', model_unet=MODELS_UNET_DIR+"unet_highway.h5", shape_unet=s, timestep=TIMESTEP)
 
 #%% Load dataset train
 
 COCO_DIR = os.path.join(DATASET_DIR,"coco2014/")
 
-coco_train = coco.CocoDataset()
+coco_train = coco.CocoDataset() # Objet qui va contenir les images et les masques d'entrainement
 coco_train.load_coco(COCO_DIR, "train", year='2014', auto_download=True, class_ids=[1,3])
 coco_train.prepare()
 
-coco_val = coco.CocoDataset()
+coco_val = coco.CocoDataset() # Objet qui va contenir les images et les masques de validation
 cc = coco_val.load_coco(COCO_DIR, "minival", year='2014', auto_download=True, return_coco=True, class_ids=[1,3])
 coco_val.prepare()
 
-#%% Create Mask-RCNN
+#%% Création du Mask-RCNN
 smartmov.create_model('rcnn',model_dir=MODELS_MASKRCNN_DIR+"logs/",config=config,reuse=True,
                           model_rcnn=MODELS_MASKRCNN_DIR+"mask_rcnn_coco.h5",class_names=class_names)
 
-#%% Train Mask-RCNN
+#%% Entrainement du Mask-RCNN (warnings à ignorer)
 smartmov.train('rcnn',dataset_train_rcnn=coco_train,dataset_val_rcnn=coco_val,
                     epochs_rcnn=3, layers_rcnn='heads')
 
-#%% Convert to inference mode
-smartmov.convert_rcnn()
+#%% Conversion du Mask-RCNN en mode inférence pour pouvoir faire les prédictions
+smartmov.convert_rcnn() # Prends du temps
 
-#%% Save
+#%% Sauvegarde du modèle du Mask-RCNN
 smartmov.save(models_to_save='rcnn',dir_rcnn=os.path.join(MODELS_MASKRCNN_DIR,"mask_rcnn_example.h5"))
 
 #%% Prédiction
 
-im = []
-for f in glob.glob(ROOT_DIR+"/test_images/skating/*.jpg"):
-    im.append(plt.imread(f))
+IMAGES_DIR = os.path.join(ROOT_DIR,"dataset_test/input/") # Dossier des images à prédire (doivent correspondre au U-Net chargé avant)
 
+input_list = sorted_nicely(glob.glob(IMAGES_DIR+"*.jpg")) # Liste ordonnée des images à évaluer
+
+im = []
+for f in input_list:
+    im.append(plt.imread(f)) # Chargement des images
 im = np.array(im)
 
 pred = smartmov.predict(im,models_to_use='all') # pred contiendra (prediction globale, nombre d'objets détectés)

@@ -51,8 +51,10 @@ def gen_batch(batch_size,timestep,nom_fichier,s,f='Train'):
             gt = Image.open(T_gt[i*batch_size+j+k])
             gt = np.array(gt.resize((s[1],s[0])),dtype=np.uint8)
             gt = np.expand_dims(gt,axis=-1)
-            gt[gt<=90] = 0
-            gt[gt>0] = 1
+            if gt.dtype!=np.bool:
+                gt[(gt<255) & (gt>1)] = 0
+                gt[gt>0] = 1
+                gt = gt.astype(np.bool)
             batch_targets[j]=gt
 
         i+=1

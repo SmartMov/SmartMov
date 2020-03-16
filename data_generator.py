@@ -90,8 +90,10 @@ class DataGenerator:
                 gt = gt.resize((self.input_shape[1],self.input_shape[0]))
                 gt = np.array(gt,dtype=np.uint8)
                 gt = np.expand_dims(gt,axis=-1)
-                gt[gt<=90] = 0
-                gt[gt>0] = 1
+                if gt.dtype!=np.bool:
+                    gt[(gt<255) & (gt>1)] = 0
+                    gt[gt>0] = 1
+                    gt = gt.astype(np.bool)
                 batch_target[j] = gt
             
             i+=1
@@ -118,8 +120,10 @@ class DataGenerator:
                 gt = gt.resize((self.input_shape[1],self.input_shape[0]))
                 gt = np.array(gt,dtype=np.uint8)
                 gt = np.expand_dims(gt,axis=-1)
-                gt[gt<=90] = 0
-                gt[gt>0] = 1
+                if gt.dtype!=np.bool:
+                    gt[(gt<255) & (gt>1)] = 0
+                    gt[gt>0] = 1
+                    gt = gt.astype(np.bool)
                 batch_target[j] = gt
             
             i+=1
@@ -142,7 +146,9 @@ class DataGenerator:
         gt = gt.resize((self.input_shape[1],self.input_shape[0]))
         gt = np.array(gt,dtype=np.uint8)
         gt = np.expand_dims(gt,axis=-1)
-        gt[gt<=90] = 0
-        gt[gt>0] = 1
+        if gt.dtype!=np.bool:
+            gt[(gt<255) & (gt>1)] = 0
+            gt[gt>0] = 1
+            gt = gt.astype(np.bool)
         batch_target[0] = gt
         return batch_input, batch_target
