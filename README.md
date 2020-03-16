@@ -105,7 +105,8 @@ pip install tensorflow == 2.1.0
 
 
 Comme nous l'avons décrit précédemment, notre architecture correspond à la mise en cascade de deux réseaux. Un U-Net qui permet de détecter le mouvement, ainsi qu'un Mask-RCNN qui segmente et classe les objets. De plus, nous avons rajouté un suvi des formes afin que la couleur du masque d'un objet soit la même durant plusieurs images consécutives. Les fichiers utiles à l'entrainement et l'application de nos réseaux sont disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples), voici leur utilité :
-* [*draw_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/draw_unet.py) : dessine l’architecture du **U Net**
+* [*create_video.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/create_video.py) : applique l'algorithme à plusieurs images afin de réaliser l'évaluation et de créer la vidéo des résultats en sortie
+* [*draw_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/draw_unet.py) : dessine l’architecture du **U-Net** (nécessite Graphviz)
 * [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py) : entraîne le model du **Mask-RCNN** (à utiliser pour rajouter des types d’objets à détecter)
 * [*train_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_unet.py) : entraîne le model du **U-Net** (à utiliser pour appliquer l’algorithme sur une nouvelle dataset)
 * [*predict.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/predict.py) : applique l’algorithme à une dataset, il faut auparavant que les deux réseaux soient entraînés
