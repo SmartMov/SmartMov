@@ -100,7 +100,7 @@ pip install tensorflow == 2.1.0
 ```
 
 * Pycocotools
-    * Installer Visual C++ 2015 Build Tools (fichier [v_studio2015.exe](https://go.microsoft.com/fwlink/?LinkId=691126))
+    * Installer Visual C++ 2015 Build Tools (fichier [vstudio2015.exe](https://go.microsoft.com/fwlink/?LinkId=691126))
     * Aller à *C:\Program Files (x86)\Microsoft Visual C++ Build Tools* et lancer *vcbuildtools_msbuild.bat*
     * Lancer la commande (possibles messages d'erreur concernant des conflits de version, pas important ici) :
     ```
