@@ -127,6 +127,8 @@ Comme nous l'avons décrit précédemment, notre architecture correspond à la m
 * [*predict.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/predict.py) : applique l’algorithme à une dataset, il faut auparavant que les deux réseaux soient entraînés
 * [*evaluate.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/evaluate.py) : applique l’algorithme à une dataset contenant des groundtruth afin de l’évaluer, il faut également que les deux réseaux soient entraînés
 
+**Nous allons à présent détailler comment utiliser nos fichiers de programmation. Il faut tout de même noter que nous avons effectué un docstring de TOUTES les fonctions (lors de leur appel une documentation des paramètres entrées/sorties est disponible).** 
+
 <br>
 
 ## 2.1 Entraînement
