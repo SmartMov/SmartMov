@@ -30,13 +30,13 @@ Dans ce read me, nous vous expliquons comment réaliser l'environnement adéquat
 
 
 Voici la listes des opérations à suivre utiliser le GPU (les informations officielles sont [ici](https://www.tensorflow.org/install/gpu)):
-( un dossier que l'on a créé contenant tous les exécutables est disponible au téléchargement [ici](https://drive.google.com/file/d/1bFlTindxlSdjFx2aJfzhhh2NDMO3k3K_/view?usp=sharing) )
+( un dossier "Install - Env" que l'on a créé contenant tous les exécutables est disponible au téléchargement [ici](https://drive.google.com/file/d/1bFlTindxlSdjFx2aJfzhhh2NDMO3k3K_/view?usp=sharing) )
 
 
 *  Vérifier si la carte graphique de l'ordinateur peut supporter (https://developer.nvidia.com/cuda-gpus)
 *  Mise a jour NVIDIA (GeForce Experience)
-*  Installer Cuda 10.1 (executable disponible dans le dossier)
-*  Telecharger & Extraire Cudnn (zip disponible dans le dossier)
+*  Installer Cuda 10.1 (executable disponible dans le dossier "Install - Env")
+*  Telecharger & Extraire Cudnn (zip disponible dans le dossier "Install - Env")
     * Copier les fichiers dans le répertoire : C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1
 * Ajout des variable d'environnement
     * Liste des commandes pour modifier les variables d'environnement, à faire dans cmd (admin) (sur Windows) :
@@ -49,9 +49,23 @@ SET PATH=C:\tools\cuda\bin;%PATH%
 ```
 
 * Executer Executable VisualStudio
-Les 2 VC_redist (disponibles dans le dossier)
+Les 2 VC_redist (disponibles dans le dossier "Install - Env")
 
 *Un tutoriel de cette installation est donné sur cette page https://www.tensorflow.org/install/gpu, nous l’avons simplifié et amélioré dans ce readme*
+
+* Pycocotools
+    * Installer Visual C++ 2015 Build Tools (fichier [vstudio2015.exe](https://go.microsoft.com/fwlink/?LinkId=691126), exécutable disponible dans le dossier "Install - Env")
+    * Aller à *C:\Program Files (x86)\Microsoft Visual C++ Build Tools* et lancer *vcbuildtools_msbuild.bat*
+    * Lancer la commande (possibles messages d'erreur concernant des conflits de version, pas important ici) :
+    ```
+    pip install git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI
+    ```
+    * Si la commande se termine par les lignes ci-dessous tout est bon
+    ```
+    Installing collected packages: pycocotools
+    Successfully installed pycocotools-2.0
+    ```
+Si un problème est survenu lors de cette étape, voir ce [*lien*](https://github.com/philferriere/cocoapi).
 
 ## 1.2. Créer l'environnement Anaconda
 
@@ -98,20 +112,6 @@ Si les résultat est */device:GPU:0*, cela signifie que tout fonctionne
 ```
 pip install tensorflow == 2.1.0
 ```
-
-* Pycocotools
-    * Installer Visual C++ 2015 Build Tools (fichier [vstudio2015.exe](https://go.microsoft.com/fwlink/?LinkId=691126))
-    * Aller à *C:\Program Files (x86)\Microsoft Visual C++ Build Tools* et lancer *vcbuildtools_msbuild.bat*
-    * Lancer la commande (possibles messages d'erreur concernant des conflits de version, pas important ici) :
-    ```
-    pip install git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI
-    ```
-    * Si la commande se termine par les lignes ci-dessous tout est bon
-    ```
-    Installing collected packages: pycocotools
-    Successfully installed pycocotools-2.0
-    ```
-Si un problème est survenu lors de cette étape, voir ce [*lien*](https://github.com/philferriere/cocoapi).
 
 ---
 <br>
