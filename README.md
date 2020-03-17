@@ -237,11 +237,11 @@ Les métriques que nous avons utilisées sont l'IoU et le F1 ainsi que celle que
 | Classification-score | 0.93   | 0.97     | 0.96        | 0.98    | 0.59    | 0.59        | 0.91   | 0.85    | 0.89 |
 
 Deux tableurs Excel contenant ces resultats sont disponibles :
-* Un tableur détaillé [lien](https://drive.google.com/open?id=1Mx1Sb7iwX_EZndNRi91E9cjNKQWcqCLx) qui a pour chaque dataset une sheet dédiée regroupant :
+* Un tableur détaillé [(lien)](https://drive.google.com/open?id=1Mx1Sb7iwX_EZndNRi91E9cjNKQWcqCLx) qui a pour chaque dataset une sheet dédiée regroupant :
     * La matrice de confusion + recal & accuracy
     * Les résultats des differentes métriques avec leur évolution au cours des images 
     * Les différentes intervalles de confiance de chaque scores
-* Un tableur simplifié [lien](https://drive.google.com/file/d/11GBzR1UchXBRhhNger14mBBRmljKEKbc/view?usp=sharing) qui regroupe toutes les datasets
+* Un tableur simplifié [(lien)](https://drive.google.com/file/d/11GBzR1UchXBRhhNger14mBBRmljKEKbc/view?usp=sharing) qui regroupe toutes les datasets
 
 Les résultats visuels sont disponibles dans la vidéo YouTube suivante : https://www.youtube.com/watch?v=WBlZlWDwU8s
 
