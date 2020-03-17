@@ -221,6 +221,9 @@ Ce fichier donne donc :
 
 * Une vidéo dont on peut régler le nombre de fps qui correspond à la concaténation de toutes les images prédites. Chaque frame de la vidéo est annotée, avec en haut à gauche : le nombre d'objets détectés, le temps d'inférence et le numéro de l'image dans la séquence & en bas à droite : le score IoU et F1 pour l'image en question (section *Video*)
 
+Voici des exemples de l'application de cet algorithme sur des images :
+![alt text](https://github.com/SmartMov/SmartMov/blob/master/test_images/Res_photos_git.png)
+
 ---
 
 <br>
