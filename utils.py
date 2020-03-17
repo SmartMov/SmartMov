@@ -233,41 +233,45 @@ def get_new_colors(last_preds,last_colors,models_used='all'):
     
     for index,rect in enumerate(new_rect):
         for former_pred,former_color in zip(reversed(former_preds),reversed(last_colors)):
-            if models_used=='all':
-                lenu=len(former_pred[0]['rois'])
-            else:
-                lenu=len(former_pred['rois'])
+            if len(former_color)!=0:
+                if models_used=='all':
+                    lenu=len(former_pred[0]['rois'])
+                else:
+                    lenu=len(former_pred['rois'])
+                    
+                if lenu==0:
+                    find_color=False
+                    continue
+                nearest_rect,distances = get_nearest_rectangles(new_pred,former_pred,models_used)
+                if nearest_rect is None:
+                    find_color=False
+                    continue
                 
-            if lenu==0:
-                find_color=False
-                continue
-            nearest_rect,distances = get_nearest_rectangles(new_pred,former_pred,models_used)
-            if nearest_rect is None:
-                find_color=False
-                continue
-            
-            plus_proche = nearest_rect[index]
-            if plus_proche.shape[0]==0: # Si rectangles trop loins
-                color_final[index]=-1
-                find_color=True
-            else:
-                for k,plus_proche_rect in enumerate(plus_proche):
-                    if former_color[plus_proche_rect] in already_used_color: # Si le plus proche est déjà pris
-                        find_color=False
-                        continue
-                    else:
-                        if index_is_min(nearest_rect,distances,(index,k)): # Si distance min
-                            color_final[index] = former_color[plus_proche_rect]
-                            find_color=True
-                            already_used_color.append(former_color[plus_proche_rect])
-                            break
-                        else:
+                plus_proche = nearest_rect[index]
+                if plus_proche.shape[0]==0: # Si rectangles trop loins
+                    color_final[index]=-1
+                    find_color=True
+                else:
+                    for k,plus_proche_rect in enumerate(plus_proche):
+                        if former_color[plus_proche_rect] in already_used_color: # Si le plus proche est déjà pris
                             find_color=False
                             continue
-                if find_color==False: # Si pas de couleur pour ce rectangle, on cherche dans les prédictions d'avant
-                    continue
-                else: # Si couleur trouvée on arrête d'aller dans les autres prédictions
-                    break
+                        else:
+                            if index_is_min(nearest_rect,distances,(index,k)): # Si distance min
+                                color_final[index] = former_color[plus_proche_rect]
+                                find_color=True
+                                already_used_color.append(former_color[plus_proche_rect])
+                                break
+                            else:
+                                find_color=False
+                                continue
+                    if find_color==False: # Si pas de couleur pour ce rectangle, on cherche dans les prédictions d'avant
+                        continue
+                    else: # Si couleur trouvée on arrête d'aller dans les autres prédictions
+                        break
+            else:
+                find_color=False
+                continue
         if find_color==False: # Si même avec toutes les prédictions pas de couleur
             color_final[index] = -1
     return color_final

@@ -538,7 +538,7 @@ class SmartMov:
                 
         return self.last_metrics
     
-    def single_display(self,inp,predic=None,gt=None,gt_classes=None,temps_predic=0,display=['nb_obj'],metrics_to_display=None,gt_type=None,models_used='all',num_im=0,colors=None,couleur_texte=(255,0,0),return_colors=False,return_scores=False,return_pred=False):
+    def single_display(self,inp,predic=None,gt=None,gt_classes=None,temps_predic=0,display=['nb_obj'],metrics_to_display=None,metrics_to_compute=None,gt_type=None,models_used='all',num_im=0,colors=None,couleur_texte=(255,0,0),return_colors=False,return_scores=False,return_pred=False):
         """
         Renvoie l'image traitée à partir d'une séquence de 5 images d'entrée ou de la prédiction déjà effectuée.        
 
@@ -566,11 +566,17 @@ class SmartMov:
                   Si 'scores' est à afficher, alors metrics_to_display doit être différent de None
                   Par défaut ['nb_obj']
         metrics_to_display : list, optionnel
-                             Liste des métriques à calculer et à afficher sur l'image. La matrice de confusion ne sera jamais affichée sur l'image mais peut être tout de même calculée pour la récupérer en sortie.
+                             Liste des métriques à afficher sur l'image. La matrice de confusion ne sera jamais affichée sur l'image mais peut être tout de même calculée pour la récupérer en sortie.
                              Doit être parmi ['iou','f1','conf','rect','masks','class']. Cette liste correspond à celle de la méthode evaluate. Les mêmes restrictions s'y appliquent.
                              Pour calculer 'rect' et 'masks', les groundtruth doivent être de type 'instance' (gt_type='instance').
                              Si metrics_to_display!=None, gt_type doit être spécifié
-                             Par défaut None (signifie qu'aucun score n'est calculé)
+                             Par défaut None (signifie qu'aucun score n'est affiché)
+        metrics_to_compute : list, optionnel
+                             Liste des métriques à calculer pour les récupérer en sortie.
+                             Doit être parmi ['iou','f1','conf','rect','masks','class'].
+                             Pour calculer 'rect' et 'masks', les groundtruth doivent être de type 'instance' (gt_type='instance').
+                             Utile lorsque l'on souhaite calculer les scores sans les afficher sur l'image.
+                             Par défaut None (signifie que rien n'est calculé)
         gt_type : string, optionnel
                   Nécéssaire si metrics_to_display!=None. Doit être parmi ['bool','instance'].
                   Par défaut None (aucun score n'est donc calculé)
@@ -647,13 +653,13 @@ class SmartMov:
         for disp in display:
             if disp=='scores':
                 assert gt is not None, "Pas de groundtruth,donc les scores ne peuvent pas être calculés"
-                assert metrics_to_display is not None, "Une liste des métriques à afficher doit être donnée"
-                assert gt_type is not None, "Le type de groundtruth doit être spécifié (bool ou instance)"
-                if 'class' in metrics_to_display:
+                assert metrics_to_display is not None, "Une liste des métriques à afficher doit être donnée (metrics_to_display)"
+                assert gt_type is not None, "Le type de groundtruth doit être spécifié (gt_type doit être 'bool' ou 'instance')"
+                if ('class' in metrics_to_display):
                     assert (gt_classes is not None) or gt_type=='instance', "L'évaluation sur la correspondance des classes ne peut pas être faite si gt_classes==None"
-                evaluat = self.evaluate(pred,gt,gt_classes=gt_classes,models_used=models_used,metrics_to_compute=metrics_to_display, gt_type=gt_type)
+                evaluat_disp = self.evaluate(pred,gt,gt_classes=gt_classes,models_used=models_used,metrics_to_compute=metrics_to_display, gt_type=gt_type)
                 nb_scores=0
-                for i,met in enumerate(evaluat):
+                for i,met in enumerate(evaluat_disp):
                     if metrics_to_display[i]=='iou':
                         im_output = cv2.putText(im_output, "IoU  {:.2f}".format(met),
                     	                        (offset_horiz_scores, im_output.shape[0]-nb_scores*offset_texte-10),
@@ -695,14 +701,22 @@ class SmartMov:
                     list_return.append(choosen_colors)
                 elif i==1:
                     if scores is False:
-                        list_return.append(None)
+                        if metrics_to_compute is not None:
+                            evaluat = self.evaluate(pred,gt,gt_classes=gt_classes,models_used=models_used,metrics_to_compute=metrics_to_compute, gt_type=gt_type)
+                            list_return.append(evaluat)
+                        else:
+                            list_return.append(None)
                     else:
+                        if metrics_to_compute is not None:
+                            evaluat = self.evaluate(pred,gt,gt_classes=gt_classes,models_used=models_used,metrics_to_compute=metrics_to_compute, gt_type=gt_type)
+                        else:
+                            evaluat = evaluat_disp
                         list_return.append(evaluat)
                 elif i==2:
                     list_return.append(pred)
         return tuple(list_return)
     
-    def multi_display(self,images,gt=None,gt_classes=None,indices_dataset=None,display=['nb_obj'],metrics_to_display=None,gt_type=None,couleur_texte=(255,0,0),video_location=None,name_video='no_name',fps_video=20.0,photo_location=None,models_used='all',return_scores=True):
+    def multi_display(self,images,gt=None,gt_classes=None,indices_dataset=None,display=['nb_obj'],metrics_to_display=None,metrics_to_compute=None,gt_type=None,couleur_texte=(255,0,0),video_location=None,name_video='no_name',fps_video=20.0,photo_location=None,models_used='all',return_scores=True):
         """
         Renvoie les métriques demandées et crée une vidéo ou enregistre une série de photos traitées.
 
@@ -735,6 +749,12 @@ class SmartMov:
                              Pour calculer 'rect' et 'masks', les groundtruth doivent être de type 'instance' (gt_type='instance').
                              Si metrics_to_display!=None, gt_type doit être spécifié
                              Par défaut None (signifie qu'aucun score n'est calculé)
+        metrics_to_compute : list, optionnel
+                             Liste des métriques à calculer pour les récupérer en sortie.
+                             Doit être parmi ['iou','f1','conf','rect','masks','class'].
+                             Pour calculer 'rect' et 'masks', les groundtruth doivent être de type 'instance' (gt_type='instance').
+                             Utile lorsque l'on souhaite calculer les scores sans les afficher sur l'image.
+                             Par défaut None (signifie que rien n'est calculé)
         gt_type : string, optionnel
                   Nécéssaire si metrics_to_display!=None. Doit être parmi ['bool','instance'].
                   Par défaut None (aucun score n'est donc calculé)
@@ -778,9 +798,16 @@ class SmartMov:
         
         nb_pred_tracking=10
         
-        met_final = []
-        for i in range(len(metrics_to_display)):
-                met_final.append([])
+        if metrics_to_compute is not None:
+            met_final = []
+            for i in range(len(metrics_to_compute)):
+                    met_final.append([])
+        elif metrics_to_display is not None:
+            met_final = []
+            for i in range(len(metrics_to_display)):
+                    met_final.append([])
+        else:
+            met_final=None
         
         if isinstance(images,list):
             for i,im in enumerate(images):
@@ -836,11 +863,15 @@ class SmartMov:
                     gt_classes2=gt_classes
                 
                 im_vid,new_former_color,evaluat,pred = self.single_display(inp,predic=pred,gt=gt0, gt_classes=gt_classes[i],temps_predic=tf, display=display,
-                                                                               metrics_to_display=metrics_to_display,gt_type=gt_type,
+                                                                               metrics_to_display=metrics_to_display,metrics_to_compute=metrics_to_compute,gt_type=gt_type,
                                                                                models_used=models_used,num_im=i+1,colors=new_color,couleur_texte=couleur_texte,
                                                                                return_colors=True, return_scores=True,return_pred=True)
-                for j in range(len(metrics_to_display)):
-                    met_final[j].append(evaluat[j])
+                if metrics_to_compute is not None:
+                    for j in range(len(metrics_to_compute)):
+                        met_final[j].append(evaluat[j])
+                elif metrics_to_display is not None:
+                    for j in range(len(metrics_to_display)):
+                        met_final[j].append(evaluat[j])
                         
                 list_color.append(new_former_color)
                 
@@ -903,18 +934,28 @@ class SmartMov:
                 
                 if gt_type=='instance':
                     if isinstance(gt_classes[0],list):
-                        gt_classes2=gt_classes[i]
+                        if models_used=='all':
+                            gt_classes2=gt_classes[i+self.timestep-1]
+                        elif models_used=='rcnn':
+                            gt_classes2=gt_classes[i]
                     else:
                         gt_classes2=gt_classes
                 else:
-                    gt_classes2=gt_classes
+                    if models_used=='all':
+                        gt_classes2=gt_classes[i+self.timestep-1]
+                    elif models_used=='rcnn':
+                        gt_classes2=gt_classes[i]
                                 
                 im_vid,new_former_color,evaluat,pred = self.single_display(inp,predic=pred,gt=gt0, gt_classes=gt_classes2,temps_predic=tf, display=display,
-                                                                               metrics_to_display=metrics_to_display,gt_type=gt_type,
+                                                                               metrics_to_display=metrics_to_display,metrics_to_compute=metrics_to_compute,gt_type=gt_type,
                                                                                models_used=models_used,num_im=i+1,colors=new_color,couleur_texte=couleur_texte,
                                                                                return_colors=True, return_scores=True,return_pred=True)
-                for j in range(len(metrics_to_display)):
-                    met_final[j].append(evaluat[j])
+                if metrics_to_compute is not None:
+                    for j in range(len(metrics_to_compute)):
+                        met_final[j].append(evaluat[j])
+                elif metrics_to_display is not None:
+                    for j in range(len(metrics_to_display)):
+                        met_final[j].append(evaluat[j])
                         
                 list_color.append(new_former_color)
                 
@@ -934,7 +975,8 @@ class SmartMov:
                 print("Dossier video_location non existant. Création réussie.")
             
             if isinstance(fps_video,list): # Si plusieurs fps
-                for f in fps_video:
+                for ind,f in enumerate(fps_video):
+                    print("\nEnregistrement de la vidéo {}/{}".format(ind+1,len(fps_video)))
                     if name_video.split('.')[-1]!='avi':
                         FILE_NAME = os.path.join(video_location,name_video+"_{}_fps".format(int(np.floor(f)))+".avi")
                     else:
@@ -948,6 +990,7 @@ class SmartMov:
                         barre(i,len(vid))
                     out.release()
             else: # Si un seul fps donné
+                print("Enregistrement de la vidéo")
                 if name_video.split('.')[-1]!='avi':
                     FILE_NAME = os.path.join(video_location,name_video+".avi")
                 else:
@@ -965,6 +1008,7 @@ class SmartMov:
             if not os.path.exists(photo_location):
                 os.mkdir(photo_location)
                 print("Dossier photo_location non existant. Création réussie.")
+            print("Enregistrement des photos")
             for i in range(len(vid)):
                 image_temp=PIL.Image.fromarray(vid[i])
                 image_temp.save(os.path.join(photo_location,"{}.jpg".format(i)))
@@ -1232,7 +1276,11 @@ def display_instances(image, boxes, masks, ids, names, scores, nb_pers, list_col
     
     for i, color in enumerate(colors):
         if color==-1:
-            color=random_colors(1, list_colors, True)[0]
+            remaining_colors = list(set(list_colors)-set(colors))
+            if len(remaining_colors)==0: # Toutes les couleurs de la liste sont utilisées
+                color=random_colors(1, list_colors, True)[0]
+            else:
+                color=random_colors(1, remaining_colors)[0]
             colors[i]=color
         if not np.any(boxes[i]):
             continue

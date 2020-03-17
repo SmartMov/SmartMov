@@ -73,8 +73,8 @@ metric = smartmov.evaluate(pred,gt,gt_classes=gt_classes,metrics_to_compute=['io
 
 #%% Evaluation avec image traitée
 
-image_traitee,metric = smartmov.single_display(im,gt=gt,gt_classes=gt_classes,display=['nb_obj','scores','temps'],metrics_to_display=['iou','conf','f1','class'],
-                                                        gt_type='bool',return_scores=True) # Prédiction, évaluation et création de l'image traitée
+image_traitee,metric = smartmov.single_display(im,gt=gt,gt_classes=gt_classes,display=['nb_obj','temps'],
+                                               metrics_to_compute=['iou','conf','f1','class'],gt_type='bool',return_scores=True) # Prédiction, évaluation et création de l'image traitée
 
 plt.figure()
 plt.imshow(image_traitee) # Affichage de l'image

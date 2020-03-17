@@ -104,6 +104,8 @@ def score_box(rect_pred, rect_gt, s):
     if diff_nb_pred==0: # Si il y a autant d'objets détectés que dans la GT
         i=0
         for i,pred in enumerate(rect_pred):
+            if np.sum(rect_pred[i])==0:
+                continue
             y1,x1,y2,x2 = pred # Coordonnées du rectangle dans la prediction
             G = (np.mean([y1,y2]),np.mean([x1,x2]))
             dist_min = float('inf')
@@ -119,6 +121,8 @@ def score_box(rect_pred, rect_gt, s):
     elif diff_nb_pred>0: # Si il y a plus de prédictions que de gt
         i=0
         for i,gt in enumerate(rect_gt):
+            if np.sum(rect_pred[i])==0:
+                continue
             y1_gt,x1_gt,y2_gt,x2_gt = gt # Coordonnées du rectangle dans la prediction
             G_gt = (np.mean([y1_gt,y2_gt]),np.mean([x1_gt,x2_gt]))
             dist_min = float('inf')
@@ -137,6 +141,8 @@ def score_box(rect_pred, rect_gt, s):
     else: # Si il y a plus de gt que de prédictions
         i=0
         for i,pred in enumerate(rect_pred):
+            if np.sum(rect_pred[i])==0:
+                continue
             y1,x1,y2,x2 = pred # Coordonnées du rectangle dans la prediction
             G = (np.mean([y1,y2]),np.mean([x1,x2]))
             dist_min = float('inf')
@@ -184,6 +190,8 @@ def score_mask(mask_pred,mask_gt,rect_pred,rect_gt,s):
     if diff_nb_pred==0: # Si il y a autant d'objets détectés que dans la GT
         i=0
         for i,pred in enumerate(rect_pred):
+            if np.sum(mask_pred[...,i])==0:
+                continue
             y1,x1,y2,x2 = pred # Coordonnées du rectangle dans la prediction
             G = (np.mean([y1,y2]),np.mean([x1,x2]))
             dist_min = float('inf')
@@ -201,6 +209,8 @@ def score_mask(mask_pred,mask_gt,rect_pred,rect_gt,s):
     elif diff_nb_pred>0: # Si il y a plus de prédictions que de gt
         i=0
         for i,gt in enumerate(rect_gt):
+            if np.sum(mask_pred[...,i])==0:
+                continue
             y1_gt,x1_gt,y2_gt,x2_gt = gt # Coordonnées du rectangle dans la prediction
             G_gt = (np.mean([y1_gt,y2_gt]),np.mean([x1_gt,x2_gt]))
             dist_min = float('inf')
@@ -221,6 +231,8 @@ def score_mask(mask_pred,mask_gt,rect_pred,rect_gt,s):
     else: # Si il y a plus de gt que de prédictions
         i=0
         for i,pred in enumerate(rect_pred):
+            if np.sum(mask_pred[...,i])==0:
+                continue
             y1,x1,y2,x2 = pred # Coordonnées du rectangle dans la prediction
             G = (np.mean([y1,y2]),np.mean([x1,x2]))
             dist_min = float('inf')
@@ -326,11 +338,12 @@ def metrique_classification (pred,num_class1,nb_occurence_gt1=None,gt_instance=N
         
     pred1=pred[0]
     data=[]
-    if pred1['rois'] is []:
+    if isinstance(pred1['rois'],list):
         data=[]
     else:
         for i in range(pred1['rois'].shape[0]):
-            data.append((pred1['class_ids'][i],pred1['scores'][i]))
+            if np.sum(pred1['masks'][...,i])!=0:
+                data.append((pred1['class_ids'][i],pred1['scores'][i]))
     
     assert len(num_class)==len(nb_occurence_gt), "Il faut que chaque classe est un nombre d'objets correspondant dans la groundtruth"
     
