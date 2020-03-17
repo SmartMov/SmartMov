@@ -231,6 +231,7 @@ Les mesures que nous avons utilisées sont l'IoU et le F1. Les résultats sont p
 | :------: | :-----: | :------: | :---------: | :------: | :------: | :----------: | :-----: | :------: | :--:  |
 | IoU      | 0.816   | 0.82     | 0.62        | 0.75     | 0.56     | 0.38         | 0.64    | 0.62     | 0.651 |
 | F1-score | 0.847   | 0.93     | 0.72        | 0.839    | 0.884    | 0.429        | 0.789   | 0.834    | 0.784 |
+| Classification-score | 0.847   | 0.93     | 0.72        | 0.839    | 0.884    | 0.429        | 0.789   | 0.834    | 0.784 |
 
 Les résultats visuels sont disponibles dans la vidéo YouTube suivante : https://www.youtube.com/watch?v=WBlZlWDwU8s
 
