@@ -29,7 +29,7 @@ Dans ce read me, nous vous expliquons comment réaliser l'environnement adéquat
 ## 1.1 Compiler TensorFlow sur GPU
 
 
-Voici la listes des opérations à suivre utiliser le GPU (les informations officielles sont [ici](https://www.tensorflow.org/install/gpu)):
+Voici la listes des opérations à suivre pour utiliser le GPU :
 ( un dossier "Install - Env" que l'on a créé contenant tous les exécutables est disponible au téléchargement [ici](https://drive.google.com/file/d/1bFlTindxlSdjFx2aJfzhhh2NDMO3k3K_/view?usp=sharing) )
 
 
