@@ -229,9 +229,9 @@ Les mesures que nous avons utilisées sont l'IoU et le F1. Les résultats sont p
 
 | Métriques  | skating | PETS2006 | pedestrians | blizzard | snowFall | streetCorner | highway | Polytech | Mean  |
 | :------: | :-----: | :------: | :---------: | :------: | :------: | :----------: | :-----: | :------: | :--:  |
-| IoU      | 0.75   | 0.82     | 0.68        | 0.78     | 0.89     | 0.44         | 0.64    | 0.62     | 0.651 |
-| F1-score | 0.87   | 0.85     | 0.76        | 0.87    | 0.94    | 0.59        | 0.789   | 0.834    | 0.784 |
-| Classification-score | 0.93   | 0.97     | 0.96        | 0.98    | 0.884    | 0.429        | 0.789   | 0.834    | 0.784 |
+| IoU      | 0.75   | 0.82     | 0.68        | 0.78     | 0.89     | 0.44         | 0.71    | 0.62     | 0.73 |
+| F1-score | 0.87   | 0.85     | 0.76        | 0.87    | 0.94    | 0.59        | 0.83   | 0.84    | 0.82 |
+| Classification-score | 0.93   | 0.97     | 0.96        | 0.98    | 0.59    | 0.59        | 0.91   | 0.85    | 0.89 |
 
 Les résultats visuels sont disponibles dans la vidéo YouTube suivante : https://www.youtube.com/watch?v=WBlZlWDwU8s
 
