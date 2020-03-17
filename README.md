@@ -204,6 +204,7 @@ L'évaluation se fait de la même façon que la prédiction à la différence qu
     * Matrice de confusion (2 x 2)
     * Correspondances de chacun des rectangles (IoU sur les paires de rectangles)
     * Correspondances de chacun des masques (IoU sur les paires de masques)
+* Nous avons créé une métrique particulière qui permet d'évaluer la classification des objets pour les datasets que nous avons utilisées (c'est une "F1 score" des prédictions pondérés par leurs probalités)
 
 | Nombre de pixels **correctement détectés** comme « en mouvement » | Nombre de pixels qui **auraient du être détectés** comme « en mouvement » |
 | :------: | :-----: | 
@@ -214,7 +215,7 @@ Ce fichier donne donc :
 
 * Les prédictions de toutes les images mises dans le dossier (section *Evaluation* du fichier)
 
-* Une nouvelle feuille d'un tableau Excel contenant les résultats des différentes métriques ainsi que leurs évolutions temporelles (section *Excel création*)
+* Une nouvelle feuille d'un tableau Excel contenant les résultats des différentes métriques ainsi que leurs évolutions en fonction des images de la séquence (section *Excel création*)
 
 * Une vidéo dont on peut régler le nombre de fps qui correspond à la concaténation de toutes les images prédites. Chaque frame de la vidéo est annotée, avec en haut à gauche : le nombre d'objets détectés, le temps d'inférence et le numéro de l'image dans la séquence & en bas à droite : le score IoU et F1 pour l'image en question (section *Video*)
 
@@ -225,7 +226,7 @@ Ce fichier donne donc :
 # 3. Résultats
 
 Nous avons évalué notre réseau sur différentes séquences de l'ensemble de données CD-NET2014 (skating, PETS2006, pedestrians, blizzard, snowfall, streetCornerAtNight, highway) ainsi que sur une vidéo (Polytech) que nous avons nous-mêmes annotée.
-Les mesures que nous avons utilisées sont l'IoU et le F1. Les résultats sont présentés dans le tableau suivant :
+Les métriques que nous avons utilisées sont l'IoU et le F1 ainsi que celle que nous avons créé évaluant la classification des objets. Les résultats sont présentés dans le tableau suivant :
 
 | Métriques  | skating | PETS2006 | pedestrians | blizzard | snowFall | streetCorner | highway | Polytech | Mean  |
 | :------: | :-----: | :------: | :---------: | :------: | :------: | :----------: | :-----: | :------: | :--:  |
