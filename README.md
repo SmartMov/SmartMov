@@ -206,7 +206,7 @@ L'évaluation se fait de la même façon que la prédiction à la différence qu
     * Matrice de confusion (2 x 2)
     * Correspondances de chacun des rectangles (IoU sur les paires de rectangles)
     * Correspondances de chacun des masques (IoU sur les paires de masques)
-* Nous avons créé une métrique particulière qui permet d'évaluer la classification des objets pour les datasets que nous avons utilisées (c'est une "F1 score" des prédictions pondérés par leurs probalités)
+* Nous avons créé une métrique particulière qui permet d'évaluer la classification des objets pour les datasets que nous avons utilisées (c'est une "F1 score" des prédictions pondérés par leurs probalités) *elle est appellée class*
 
 | Nombre de pixels **correctement détectés** comme « en mouvement » | Nombre de pixels qui **auraient du être détectés** comme « en mouvement » |
 | :------: | :-----: | 
