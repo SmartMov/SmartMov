@@ -11,7 +11,6 @@ ROOT_DIR = os.path.abspath("../")
 sys.path.append(ROOT_DIR)
 from mrcnn.config import Config
 from SmartMov import SmartMov
-import coco
 from utils import barre, to_excel, sorted_nicely, get_new_colors
 from metrics import f1_score
 

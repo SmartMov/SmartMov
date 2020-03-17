@@ -12,7 +12,6 @@ sys.path.append(ROOT_DIR)
 from mrcnn.config import Config
 from SmartMov import SmartMov
 from data_generator import DataGenerator
-import coco
 from utils import sorted_nicely
 
 class InferenceConfig(Config):
