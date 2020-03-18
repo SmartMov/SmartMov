@@ -208,6 +208,8 @@ L'évaluation se fait de la même façon que la prédiction à la différence qu
     * Correspondances de chacun des masques (IoU sur les paires de masques)
 * Nous avons créé une métrique particulière qui permet d'évaluer la classification des objets pour les datasets que nous avons utilisées (c'est une "F1 score" des prédictions pondérés par leurs probalités) *elle est appellée class*
 
+Les matrices de confusions sont crées de cette manière :
+
 | Nombre de pixels **correctement détectés** comme « en mouvement » | Nombre de pixels qui **auraient du être détectés** comme « en mouvement » |
 | :------: | :-----: | 
 | Nombre de pixels qui **n'auraient pas du être détectés** comme « en mouvement » | Nombre de pixels **correctement détectés** comme « sans mouvement » |
@@ -223,6 +225,8 @@ Ce fichier donne donc :
 
 Voici des exemples de l'application de cet algorithme sur des images :
 ![alt text](https://github.com/SmartMov/SmartMov/blob/master/test_images/Res_photos_git.png)
+
+*Les annotations des scores sur les images traitées sont optionnelles, si vous les mettez, la taille et le positionnement de la police se calibre automatiquement à la taille de l'image*
 
 ---
 
