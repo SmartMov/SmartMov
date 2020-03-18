@@ -45,7 +45,16 @@ smartmov.load_models('rcnn', model_rcnn=MODELS_MASKRCNN_DIR+'mask_rcnn_person_ca
 #%% Création du U-Net
 smartmov.create_model('unet',shape_unet=s,timestep=TIMESTEP)
 
-#%% Première manière d'entrainer (avec un objet DataGenerator qui peut être appliqué à plusieurs dossiers)
+#%% Première manière d'entrainer (avec un seul dossier) --> A PRIVILIEGIER
+
+train_dir = os.path.join(ROOT_DIR,"dataset_train/") # Dossier contenant les images et les groundtruth pour l'entrainement
+
+smartmov.train('unet',dir_train_unet=train_dir, dir_checkpoint_unet=os.path.join(MODELS_UNET_DIR,"checkpoint/"),
+                    batch_size_unet=1,epochs_unet=2) # Entrainement
+
+smartmov.save(models_to_save='unet',dir_unet=os.path.join(MODELS_UNET_DIR,'unet_example_directory.h5')) # Sauvegarde du modèle
+
+#%% Seconde manière d'entrainer (avec un objet DataGenerator qui peut être appliqué à plusieurs dossiers)
 
 CDNET_DIR = os.path.join(DATASET_DIR,"CD-NET_2014/")
 dirs = glob.glob(CDNET_DIR+"*/") # Liste de tous les dossiers à utiliser pour l'entrainement
@@ -57,15 +66,6 @@ smartmov.train('unet', generator_unet=gen, dir_checkpoint_unet=os.path.join(MODE
                batch_size_unet=1,epochs_unet=2) # Entrainement
 
 smartmov.save(models_to_save='unet',dir_unet=os.path.join(MODELS_UNET_DIR,'unet_example_generator.h5')) # Sauvegarde du modèle
-
-#%% Seconde manière d'entrainer (avec un seul dossier)
-
-train_dir = os.path.join(ROOT_DIR,"dataset_train/") # Dossier contenant les images et les groundtruth pour l'entrainement
-
-smartmov.train('unet',dir_train_unet=train_dir, dir_checkpoint_unet=os.path.join(MODELS_UNET_DIR,"checkpoint/"),
-                    batch_size_unet=1,epochs_unet=2) # Entrainement
-
-smartmov.save(models_to_save='unet',dir_unet=os.path.join(MODELS_UNET_DIR,'unet_example_directory.h5')) # Sauvegarde du modèle
 
 #%% Prédiction
 
