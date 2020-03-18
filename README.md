@@ -123,6 +123,7 @@ Comme nous l'avons décrit précédemment, notre architecture correspond à la m
 * [*create_video.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/create_video.py) : applique l'algorithme à plusieurs images afin de réaliser l'évaluation et de créer la vidéo des résultats en sortie
 * [*draw_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/draw_unet.py) : dessine l’architecture du **U-Net** (nécessite Graphviz)
 * [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py) : entraîne le model du **Mask-RCNN** (à utiliser pour rajouter des types d’objets à détecter)
+* [*train_rcnn_details.ipynb*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn_details.ipynb) : notebook qui détaille l'entrenaiement du Mask-RCNN de A à Z
 * [*train_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_unet.py) : entraîne le model du **U-Net** (à utiliser pour appliquer l’algorithme sur une nouvelle dataset)
 * [*predict.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/predict.py) : applique l’algorithme à une dataset, il faut auparavant que les deux réseaux soient entraînés
 * [*evaluate.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/evaluate.py) : applique l’algorithme à une dataset contenant des groundtruth afin de l’évaluer, il faut également que les deux réseaux soient entraînés
