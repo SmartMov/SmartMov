@@ -140,7 +140,7 @@ Les modèles des réseaux entraînés sont disponibles dans le fichier [**models
 
 ### **Mask-RCNN**
 
-Concernant le **Mask-RCNN**, nous l'avons entraîné de façon à ce qu'il reconnaisse les voitures et les humains. La méthode d'entrainement que nous avons utilisée est détaillée dans le fichier [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py) disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples), elle est basée sur les idées de l'article suivant : https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d. 
+Concernant le **Mask-RCNN**, nous l'avons entraîné de façon à ce qu'il reconnaisse les voitures et les humains. La méthode d'entrainement que nous avons utilisée est détaillée dans le fichier [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py) et la méthode d'entrainement détaillée est dans le fichier [*train_rcnn_details.ipynb*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn_details.ipynb), tout est disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples), elle est basée sur les idées de l'article suivant : https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d.
 
 Il doit être ré-entrainé afin de rajouter des classes d’objets à détecter. Cela se fait de la manière suivante :
 * Dans la classe *InferenceConfig* il faut modifier l'attribut NUM_CLASSES qui devra valoir le nombre de classes que vous souhaitez détecter + 1 (pour le background).
