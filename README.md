@@ -123,6 +123,7 @@ Comme nous l'avons décrit précédemment, notre architecture correspond à la m
 * [*create_video.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/create_video.py) : applique l'algorithme à plusieurs images afin de réaliser l'évaluation et de créer la vidéo des résultats en sortie
 * [*draw_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/draw_unet.py) : dessine l’architecture du **U-Net** (nécessite Graphviz)
 * [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py) : entraîne le model du **Mask-RCNN** (à utiliser pour rajouter des types d’objets à détecter)
+* [*train_rcnn_details.ipynb*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn_details.ipynb) : notebook qui détaille l'entrenaiement du Mask-RCNN de A à Z
 * [*train_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_unet.py) : entraîne le model du **U-Net** (à utiliser pour appliquer l’algorithme sur une nouvelle dataset)
 * [*predict.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/predict.py) : applique l’algorithme à une dataset, il faut auparavant que les deux réseaux soient entraînés
 * [*evaluate.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/evaluate.py) : applique l’algorithme à une dataset contenant des groundtruth afin de l’évaluer, il faut également que les deux réseaux soient entraînés
@@ -139,7 +140,7 @@ Les modèles des réseaux entraînés sont disponibles dans le fichier [**models
 
 ### **Mask-RCNN**
 
-Concernant le **Mask-RCNN**, nous l'avons entraîné de façon à ce qu'il reconnaisse les voitures et les humains. La méthode d'entrainement que nous avons utilisée est détaillée dans le fichier [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py) disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples), elle est basée sur les idées de l'article suivant : https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d. 
+Concernant le **Mask-RCNN**, nous l'avons entraîné de façon à ce qu'il reconnaisse les voitures et les humains. La méthode d'entrainement que nous avons utilisée est détaillée dans le fichier [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py) et la méthode d'entrainement détaillée est dans le fichier [*train_rcnn_details.ipynb*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn_details.ipynb), tout est disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples), elle est basée sur les idées de l'article suivant : https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d.
 
 Il doit être ré-entrainé afin de rajouter des classes d’objets à détecter. Cela se fait de la manière suivante :
 * Dans la classe *InferenceConfig* il faut modifier l'attribut NUM_CLASSES qui devra valoir le nombre de classes que vous souhaitez détecter + 1 (pour le background).
@@ -169,12 +170,14 @@ Un autre exemple de création de la classe est à trouver à cette [*URL*](https
 
 Le **U-Net** ne peut être utilisé que sur des images semblables à celles de la dataset sur laquelle il s'est entrainé. Des modèles entraînés pour différentes dataset sont disponibles dans le sous-dossier **models/U-Net** (skating, PETS2006, pedestrians, blizzard, snowFall, streetCorner, highway, Polytech).
 
-Si vous voulez **utiliser d'autres datasets** il faut mettre les images dans le fichier [**dataset_train**](https://github.com/SmartMov/SmartMov/tree/master/dataset_train) afin d’entraîner le **U-Net**.
 Pour l’entraîner sur une nouvelle dataset, les détails sont dans le fichier [*train_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_unet.py). Les différentes étapes présentées dans ce code sont les suivantes :
 * Création du modèle avec *smartmov.create_model()*. Les paramètres sont 'unet' pour spécifier qu'il s'agit de ce type de modèle qui est à créer, 'shape_unet' doit être un tuple donnant la taille des images en entrée du réseau, et 'timestep' est le nombre d'images consécutives à utiliser pour estimer le mouvement.
 * Entrainement du modèle : Il existe deux méthodes d'entrainement :
-    * La première consiste à utiliser un objet de type *DataGenerator* qui dans un premier temps charge les images avec *DataGenerator.load_data()* (qui prend en paramètre une liste de dossiers contenant les images et leurs groundtruth dans des dossiers "input" et "groudntruth" au sein de chacun des élements de la liste ainsi que le nombre d'images à utiliser parmi tous ces dossiers). Dans ce cas, lorsque la méthode *smartmov.train()* est appellée, le paramètre 'generator_unet' doit contenir cet objet créé avant. Les autres paramètres sont les classiques epochs et batch_size.
-    * La seconde consiste à simplement passer en paramètre de la méthode *smartmov.train()* le paramètre 'dir_train_unet' (qui correspond à un dossier organisé de la même manière que pour la première méthode) ainsi que le batch_size et le nombre d'epochs.
+
+    * La première (à privilégier car plus simple) consiste à simplement passer en paramètre de la méthode *smartmov.train()* le paramètre 'dir_train_unet' (qui correspond à un dossier organisé en 2 sous dossier : input étant les images brutes et groundtruth étant les vérités terrains) ainsi que le batch_size et le nombre d'epochs. *Si vous voulez donc **utiliser d'autres datasets** il faut mettre les images dans le fichier [**dataset_train**](https://github.com/SmartMov/SmartMov/tree/master/dataset_train) pour l'entrainement*.
+    
+    * La seconde consiste à utiliser un objet de type *DataGenerator* qui dans un premier temps charge les images avec *DataGenerator.load_data()* (qui prend en paramètre une liste de dossiers contenant les images et leurs groundtruth dans des dossiers "input" et "groudntruth" ainsi que le nombre d'images à utiliser parmi tous ces dossiers). Dans ce cas, lorsque la méthode *smartmov.train()* est appellée, le paramètre 'generator_unet' doit contenir cet objet créé avant. Les autres paramètres sont les classiques epochs et batch_size.
+
 * Une fois l'entrainement terminé, le modèle peut être sauvegardé en utilisant la méthode *smartmov.save()* avec les paramètres 'models_to_save'='unet' et 'dir_unet' correspond au fichier .h5 ou le modèle sera sauvegardé.
 
 Néanmoins, il est également possible d'**améliorer un modèle** déjà entraîné, il faut pour ce faire d'abord utiliser la méthode *smartmov.load_model()* en chargeant le modèle à améliorer puis ensuite utiliser la méthode *smartmov.train()* de la même manière que décrit ci-dessus (sans utiliser *smartmov.create_model()*).
