@@ -235,7 +235,7 @@ Voici des exemples de l'application de cet algorithme sur des images :
 # 3. Résultats
 
 Nous avons évalué notre réseau sur différentes séquences de l'ensemble de données CD-NET2014 (skating, PETS2006, pedestrians, blizzard, snowfall, streetCornerAtNight, highway) ainsi que sur une vidéo (Polytech) que nous avons nous-mêmes annotée.
-Les métriques que nous avons utilisées sont l'IoU et le F1 ainsi que celle évaluant la classification des objets que nous avons créé. Les résultats sont présentés dans le tableau suivant :
+Les métriques que nous avons utilisées sont l'IoU et le F1 ainsi que celle évaluant la classification des objets que nous avons créée. Les résultats sont présentés dans le tableau suivant :
 | Métriques  | skating | PETS2006 | pedestrians | blizzard | snowFall | streetCorner | highway | Polytech | Mean  |
 | :------: | :-----: | :------: | :---------: | :------: | :------: | :----------: | :-----: | :------: | :--:  |
 | IoU      | 0.75   | 0.82     | 0.68        | 0.78     | 0.89     | 0.44         | 0.71    | 0.62     | 0.73 |
