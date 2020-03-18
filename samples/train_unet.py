@@ -60,7 +60,7 @@ smartmov.save(models_to_save='unet',dir_unet=os.path.join(MODELS_UNET_DIR,'unet_
 
 #%% Seconde manière d'entrainer (avec un seul dossier)
 
-train_dir = os.path.join(DATASET_DIR,"highway/") # Dossier contenant les images et les groundtruth pour l'entrainement
+train_dir = os.path.join(DATASET_DIR,"dataset_train/") # Dossier contenant les images et les groundtruth pour l'entrainement
 
 smartmov.train('unet',dir_train_unet=train_dir, dir_checkpoint_unet=os.path.join(MODELS_UNET_DIR,"checkpoint/"),
                     batch_size_unet=1,epochs_unet=2) # Entrainement
