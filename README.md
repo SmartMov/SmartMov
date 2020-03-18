@@ -252,7 +252,7 @@ Deux tableurs Excel contenant ces resultats sont disponibles :
     * Les différentes intervalles de confiance de chaque scores
 * Un tableur simplifié [(lien)](https://drive.google.com/file/d/11GBzR1UchXBRhhNger14mBBRmljKEKbc/view?usp=sharing) qui regroupe toutes les datasets
 
-Les résultats visuels sont disponibles dans la vidéo YouTube suivante : https://www.youtube.com/watch?v=WBlZlWDwU8s (*à regarder en 1080p*)
+Les résultats visuels sont disponibles dans la vidéo YouTube suivante : https://www.youtube.com/watch?v=PceNiT2Bas8 (*à regarder en 1080p*)
 
 
 ---
