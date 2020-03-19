@@ -2,6 +2,8 @@ import numpy as np
 import tensorflow as tf
 from skimage.transform import resize
 from tensorflow.keras.layers import TimeDistributed
+import tensorflow.keras.layers as KL
+import tensorflow.keras.models as KM
 import glob
 from PIL import Image
 
@@ -62,7 +64,6 @@ def gen_batch(batch_size,timestep,nom_fichier,s,f='Train'):
             i=0
     
         yield batch_inputs,batch_targets
-    
     
     
 def create(s,TIMESTEP):
@@ -194,7 +195,7 @@ def train (BATCH_SIZE,TIMESTEP,EPOCHS,s,model,checkpoint_dir,nom_fichier=None,ge
     
     if generator!=None:
         gen = generator
-        model.fit(gen.generate_train(BATCH_SIZE),steps_per_epoch=gen.get_nb_train()//BATCH_SIZE,
+        model.fit(gen.generate_train(BATCH_SIZE),steps_per_epoch=gen.steps_per_epoch,
                   epochs=EPOCHS,validation_data = gen.generate_val(BATCH_SIZE),
                   validation_steps = gen.get_nb_val()//BATCH_SIZE,
                   callbacks=[ckpt])
