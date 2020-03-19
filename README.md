@@ -70,6 +70,7 @@ conda install spyder
 
 ```
 pip install imgaug
+pip install Cython
 pip install opencv-python
 pip install Pillow
 pip install xlwings
