@@ -19,7 +19,7 @@ Dans ce read me, nous vous expliquons comment réaliser l'environnement adéquat
         + U Net
     2. Prédiction
     3. Évaluation
-3. **Resultats**
+3. **Résultats**
 
 ---
 <br>      
@@ -34,9 +34,9 @@ Voici la liste des opérations à suivre pour utiliser le GPU :
 
 
 *  Vérifier si la carte graphique de l'ordinateur peut supporter (https://developer.nvidia.com/cuda-gpus)
-*  Mise a jour NVIDIA (GeForce Experience)
+*  Mettre à jour NVIDIA (GeForce Experience)
 *  Installer Cuda 10.1 (exécutable disponible dans le dossier "Install - Env")
-*  Telecharger & Extraire Cudnn (zip disponible dans le dossier "Install - Env")
+*  Télécharger & Extraire Cudnn (zip disponible dans le dossier "Install - Env")
     * Copier les fichiers dans le répertoire : C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1
 * Ajout des variables d'environnement
     * Liste des commandes pour modifier les variables d'environnement, à faire dans cmd (admin) (sur Windows) :
@@ -48,7 +48,7 @@ SET PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;%PATH%
 SET PATH=C:\tools\cuda\bin;%PATH%
 ```
 
-* Executer Executable VisualStudio
+* Exécuter Executable VisualStudio
 Les 2 VC_redist (disponibles dans le dossier "Install - Env")
 
 *Un tutoriel de cette installation est donné sur cette page https://www.tensorflow.org/install/gpu, nous l’avons simplifié et amélioré dans ce readme*
@@ -122,12 +122,12 @@ Comme nous l'avons décrit précédemment, notre architecture correspond à la m
 * [*create_video.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/create_video.py) : applique l'algorithme à plusieurs images afin de réaliser l'évaluation et de créer la vidéo des résultats en sortie
 * [*draw_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/draw_unet.py) : dessine l’architecture du **U-Net** (nécessite Graphviz)
 * [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py) : entraîne le model du **Mask-RCNN** (à utiliser pour rajouter des types d’objets à détecter)
-* [*train_rcnn_details.ipynb*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn_details.ipynb) : notebook qui détaille l'entrenaiement du Mask-RCNN de A à Z
+* [*train_rcnn_details.ipynb*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn_details.ipynb) : notebook qui détaille l'entrainement du Mask-RCNN de A à Z
 * [*train_unet.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_unet.py) : entraîne le model du **U-Net** (à utiliser pour appliquer l’algorithme sur une nouvelle dataset)
 * [*predict.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/predict.py) : applique l’algorithme à une dataset, il faut auparavant que les deux réseaux soient entraînés
 * [*evaluate.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/evaluate.py) : applique l’algorithme à une dataset contenant des groundtruth afin de l’évaluer, il faut également que les deux réseaux soient entraînés
 
-**Nous allons à présent détailler comment utiliser nos fichiers de programmation. Il faut tout de même noter que nous avons effectué un docstring de TOUTES les fonctions (lors de leur appel une documentation des paramètres entrées/sorties est disponible), ceci permet d'alléger ce README.** 
+**Nous allons à présent détailler l'utilisation de nos fichiers de programmation. Il faut tout de même noter que nous avons effectué un docstring de TOUTES les fonctions (lors de leur appel, une documentation des paramètres entrées/sorties est disponible), ceci permet d'alléger ce readme.** 
 
 <br>
 
@@ -141,19 +141,19 @@ Les modèles des réseaux entraînés sont disponibles dans le fichier [**models
 
 Concernant le **Mask-RCNN**, nous l'avons entraîné de façon à ce qu'il reconnaisse les voitures et les humains. La méthode d'entrainement que nous avons utilisée est détaillée dans le fichier [*train_rcnn.py*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn.py). Pour simplifier sa compréhension nous l'avons décliné en code Jupiter (fichier [*train_rcnn_details.ipynb*](https://github.com/SmartMov/SmartMov/blob/master/samples/train_rcnn_details.ipynb)). Tout est disponible dans le dossier [**samples**](https://github.com/SmartMov/SmartMov/tree/master/samples), elle est basée sur les idées de l'article suivant : https://towardsdatascience.com/object-detection-using-mask-r-cnn-on-a-custom-dataset-4f79ab692f6d.
 
-Il doit être réentrainé afin de rajouter des classes d’objets à détecter. Cela se fait de la manière suivante :
+Il doit être réentrainé **uniquement** afin de rajouter des classes d’objets à détecter. Cela se fait de la manière suivante :
 * Dans la classe *InferenceConfig* il faut modifier l'attribut NUM_CLASSES qui devra valoir le nombre de classes que vous souhaitez détecter + 1 (pour le background).
 * La variable *class_names* doit également être modifiée et sa longueur doit être la même que NUM_CLASSES. *class_names* correspond aux noms des classes à détecter. Le premier élément doit être 'BG'.
 * Une classe doit être créée sur le modèle de la classe utils.Dataset. Le détail de la création de cette classe est ci-dessous.
-* L'objet correspondant à cette classe doit être créé puis la dataset doit être chargée en utilisant la méthode *load_dataset()* crée ci-dessus. La dataset doit ensuite être préparée avec la méthode *prepare()*
-* Il faut ensuite créer le modèle RCNN avec *smartmov.create_model()*. Les paramètres à utiliser sont 'model_dir' qui correspond à la localisation des logs, 'config' qui doit contenir l'objet créé avec la classe InferenceConfig, 'reuse'=True pour réutiliser un ancien modèle, 'model_rcnn' doit contenir le fichier .h5 contenant les poids du modèle RCNN déjà entrainé et 'class_names' doit être la liste des noms de classes crée plus haut.
+* L'objet correspondant à cette classe doit être créé puis la dataset doit être chargée en utilisant la méthode *load_dataset()* créée ci-dessus. La dataset doit ensuite être préparée avec la méthode *prepare()*
+* Il faut ensuite créer le modèle RCNN avec *smartmov.create_model()*. Les paramètres à utiliser sont 'model_dir' qui correspond à la localisation des logs, 'config' qui doit contenir l'objet créé avec la classe InferenceConfig, 'reuse'=True pour réutiliser un ancien modèle, 'model_rcnn' doit contenir le fichier .h5 contenant les poids du modèle RCNN déjà entrainé et 'class_names' doit être la liste des noms de classes créée plus haut.
 * Ensuite la méthode *smartmov.train()* doit être utilisée afin d'entrainer réellement le Mask-RCNN. Les paramètres sont 'dataset_train_rcnn' qui correspond à l'objet créé au-dessus contenant les images pour le training, 'dataset_val_rcnn' est le même type d'objet, mais contenant les images pour la validation, 'epochs_rcnn' correspond au nombre d'epochs pour l'entrainement, et 'layers'='heads' pour ne pas réentrainer tous les poids du réseau (inutile puisqu'un modèle pré-entrainé a été chargé)
 * Une fois l'entrainement terminé, il est important de convertir le modèle en mode 'inference' avant de pouvoir faire des prédictions. Pour ce faire, il faut utiliser la méthode *smartmov.convert_rcnn()*
 * Il est enfin possible d'enregistrer le modèle en utilisant *smartmov.save()* avec pour paramètres 'models_to_use'='rcnn' et 'dir_rcnn' le chemin du fichier .h5 ou enregistrer les poids.
 
 #### Création de la classe pour l'entrainement du Mask-RCNN
 Pour entrainer le Mask-RCNN, il faut créer une classe qui permettra de renvoyer tous les masques et les images qui leur correspondent. Pour ce faire, deux méthodes doivent être déclarées. La première est *load_dataset()*. Elle doit fonctionner comme ceci :
-* Pour chaque classe que l'on souhaite détecter, il faut appeler la méthode *add_class()* de *utils_Dataset* afin que l'objet créé ensuite connaisse toutes les classes qu'il devra détecter
+* Pour chaque classe que l'on souhaite détecter, il faut appeler la méthode *add_class()* de *utils_Dataset* afin que l'objet créé ensuite connaisse toutes les classes qu'il devra détecter.
 * Pour chaque image de la dataset, il faut appeler la méthode *add_image()*. De cette manière, lorsque nous appellerons la méthode *load_image()* à partir de l'indice de l'image dans la dataset, toutes les informations de l'image seront connues.
 
 La seconde méthode à déclarer est *load_mask()*. Cette méthode devra prendre en paramètre l'indice de l'image dans la dataset et renvoyer le masque correspondant. La sortie de cette fonction doit être un tuple de taille 2, comprenant un tableau de taille (H,W,nb_instances) et un autre tableau correspondant à l'indice de la classe de chaque instance.
@@ -173,11 +173,11 @@ Pour l’entraîner sur une nouvelle dataset, les détails sont dans le fichier 
 * Création du modèle avec *smartmov.create_model()*. Les paramètres sont 'unet' pour spécifier qu'il s'agit de ce type de modèle qui est à créer, 'shape_unet' doit être un tuple donnant la taille des images en entrée du réseau, et 'timestep' est le nombre d'images consécutives à utiliser pour estimer le mouvement.
 * Entrainement du modèle : Il existe deux méthodes d'entrainement :
 
-    * La première (à privilégier, car plus simple) consiste à simplement passer en paramètre de la méthode *smartmov.train()* le paramètre 'dir_train_unet' (qui correspond à un dossier organisé en 2 sous dossier : input étant les images brutes et groundtruth étant les vérités terrain) ainsi que le batch_size et le nombre d'epochs. *Si vous voulez donc **utiliser d'autres datasets** il faut mettre les images dans le fichier [**dataset_train**](https://github.com/SmartMov/SmartMov/tree/master/dataset_train) pour l'entrainement*.
+    * La première (à privilégier, car plus simple) consiste à simplement passer en paramètre de la méthode *smartmov.train()* le paramètre 'dir_train_unet' (qui correspond à un dossier organisé en 2 sous-dossiers : input étant les images brutes et groundtruth étant les vérités terrain) ainsi que le batch_size et le nombre d'epochs. *Si vous voulez donc **utiliser d'autres datasets** il faut mettre les images dans le fichier [**dataset_train**](https://github.com/SmartMov/SmartMov/tree/master/dataset_train) pour l'entrainement*.
     
     * La seconde consiste à utiliser un objet de type *DataGenerator* qui dans un premier temps charge les images avec *DataGenerator.load_data()* (qui prend en paramètre une liste de dossiers contenant les images et leurs groundtruth dans des dossiers "input" et "groudntruth" ainsi que le nombre d'images à utiliser parmi tous ces dossiers). Dans ce cas, lorsque la méthode *smartmov.train()* est appelée, le paramètre 'generator_unet' doit contenir cet objet créé avant. Les autres paramètres sont les classiques epochs et batch_size.
 
-* Une fois l'entrainement terminé, le modèle peut être sauvegardé en utilisant la méthode *smartmov.save()* avec les paramètres 'models_to_save'='unet' et 'dir_unet' correspond au fichier .h5 ou le modèle sera sauvegardé.
+* Une fois l'entrainement terminé, le modèle peut être sauvegardé en utilisant la méthode *smartmov.save()* avec les paramètres 'models_to_save'='unet' et 'dir_unet' correspond au fichier .h5 où le modèle sera sauvegardé.
 
 Néanmoins, il est également possible d'**améliorer un modèle** déjà entraîné, il faut pour ce faire d'abord utiliser la méthode *smartmov.load_model()* en chargeant le modèle à améliorer puis ensuite utiliser la méthode *smartmov.train()* de la même manière que décrite ci-dessus (sans utiliser *smartmov.create_model()*).
 
@@ -192,7 +192,7 @@ L'objet *InferenceConfig* créé au début du fichier doit être modifié pour �
 
 Il faut modifier dans la fonction : ```smartmov.load_models ( ... )``` le nom du fichier contenant le modèle du **U-Net** afin de le faire correspondre à la dataset à traiter  (et aussi modifier celui du **Mask-RCNN** si vous l’avez réentrainé).
 
-La prédiction d’une image correspond à la superposition de la même image et des différents masques de couleur ainsi que la boîte englobante des objets prédits en mouvement. Nous ajoutons à cela en haut de la box le nom de la classe et sa probabilité prédite d’appartenance. Nous instaurez un notion de tracking pour que  chaque objet garde la même couleur tout au long de la scène.
+La prédiction d’une image correspond à la superposition de la même image et des différents masques de couleur ainsi que la boîte englobante des objets prédits en mouvement. Nous ajoutons à cela en haut de la box le nom de la classe et sa probabilité prédite d’appartenance. Nous avons intégré une notion de tracking pour que  chaque objet garde la même couleur tout au long de la scène.
 
 
 <br>
