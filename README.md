@@ -6,7 +6,7 @@ Notre réseau correspond à la mise en cascade de deux réseaux différents. Nou
 
 Le Mask-RCNN est un réseau capable de s'adapter à tout type de données, ce qui n'est pas le cas de notre U-Net, qui détecte les mouvements sur la scène. Il est donc nécessaire de former ce réseau sur votre jeu de données afin qu'il soit capable de s'adapter.
 
-***Le code a été développé pour code Tensorflow 2.1.0, Windows 10 et Python=3.7.6***
+***Le code a été développé pour Tensorflow 2.1.0, Windows 10 et Python=3.7.6***
 
 Dans ce read me, nous vous expliquons comment réaliser l'environnement adéquat et utiliser nos codes. De plus, nous communiquons les différents résultats obtenus sur différentes datasets. Voici la table des matières :
 
