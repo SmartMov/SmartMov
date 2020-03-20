@@ -69,7 +69,7 @@ conda install spyder
 * Packages
 
 ```
-pip install imgaug
+pip install imgaug==0.3.0
 pip install Cython
 pip install opencv-python
 pip install Pillow
