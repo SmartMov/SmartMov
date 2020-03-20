@@ -243,7 +243,7 @@ Les métriques que nous avons utilisées sont l'IoU et le F1 ainsi que celle év
 | :------: | :-----: | :------: | :---------: | :------: | :------: | :----------: | :-----: | :------: | :--:  |
 | IoU      | 0.75   | 0.82     | 0.68        | 0.78     | 0.89     | 0.44         | 0.71    | 0.62     | 0.73 |
 | F1-score | 0.87   | 0.85     | 0.76        | 0.87    | 0.94    | 0.59        | 0.83   | 0.84    | 0.82 |
-| Classification-score | 0.93   | 0.97     | 0.96        | 0.98    | 0.59    | 0.59        | 0.91   | 0.85    | 0.89 |
+| Classification-score | 0.93   | 0.97     | 0.96        | 0.98    | 0.98    | 0.59        | 0.91   | 0.85    | 0.89 |
 
 Deux tableurs Excel contenant ces résultats sont disponibles :
 * Un tableur détaillé [(lien)](https://drive.google.com/open?id=1Mx1Sb7iwX_EZndNRi91E9cjNKQWcqCLx) qui a pour chaque dataset une sheet dédiée regroupant :
