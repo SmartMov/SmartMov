@@ -121,7 +121,7 @@ class DataGenerator:
                                                                                                               self.get_nb_train())
         i=0
         nb = self.get_nb_train()
-        while i<=(self.steps_per_epoch):
+        while i<=(nb//batch_size):
             batch_input = np.zeros((batch_size,self.timestep,self.input_shape[0],self.input_shape[1],3),dtype=np.float32)
             batch_target = np.zeros((batch_size,self.input_shape[0],self.input_shape[1],1),dtype=np.uint8)
             for j in range(batch_size):
@@ -150,7 +150,7 @@ class DataGenerator:
                 batch_target[j] = gt
             
             i+=1
-            if i>=(self.steps_per_epoch):
+            if i>=(nb//batch_size):
                 i=0
             
             yield batch_input,batch_target

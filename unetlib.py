@@ -81,86 +81,93 @@ def create(s,TIMESTEP):
 
     '''    
         
-    input_img  =  tf.keras.layers.Input ( shape = (TIMESTEP,s[0],s[1],s[2]))
+    input_img  =  tf.keras.layers.Input ( shape = (TIMESTEP,s[0],s[1],s[2]), name='input_img')
     
     x1 = tf.keras.layers.ConvLSTM2D(filters=6,activation='tanh',
                                          kernel_size=3,padding='same',
                                          return_sequences=True,
                                          recurrent_activation='sigmoid',
                                          recurrent_dropout=0,
-                                         unroll=False,use_bias=True) ( input_img )
+                                         unroll=False,use_bias=True,
+                                         name='conv1') ( input_img )
     
     x1_bis = tf.keras.layers.ConvLSTM2D(filters=6,activation='tanh',
                                          kernel_size=3,padding='same',
                                          return_sequences=False,
                                          recurrent_activation='sigmoid',
                                          recurrent_dropout=0,
-                                         unroll=False,use_bias=True) ( input_img )
+                                         unroll=False,use_bias=True,
+                                         name='conv1_pont') ( input_img )
     
-    x = TimeDistributed(tf.keras.layers.BatchNormalization(momentum=0.8))(x1)
-    x = TimeDistributed(tf.keras.layers.MaxPooling2D(pool_size=(2,2),strides=2)) (x)
+    x = TimeDistributed(tf.keras.layers.BatchNormalization(momentum=0.8), name='batchnorm_conv1')(x1)
+    x = TimeDistributed(tf.keras.layers.MaxPooling2D(pool_size=(2,2),strides=2), name='pooling_conv1') (x)
     
     x2 = tf.keras.layers.ConvLSTM2D(filters=12,activation='tanh',
                                          kernel_size=3,padding='same',
                                          return_sequences=True,
                                          recurrent_activation='sigmoid',
                                          recurrent_dropout=0,
-                                         unroll=False,use_bias=True)(x)
+                                         unroll=False,use_bias=True,
+                                         name='conv2')(x)
     
     x2_bis = tf.keras.layers.ConvLSTM2D(filters=12,activation='tanh',
                                          kernel_size=3,padding='same',
                                          return_sequences=False,
                                          recurrent_activation='sigmoid',
                                          recurrent_dropout=0,
-                                         unroll=False,use_bias=True)(x)
+                                         unroll=False,use_bias=True,
+                                         name='conv2_pont')(x)
     
-    x = TimeDistributed(tf.keras.layers.BatchNormalization(momentum=0.8))(x2)
-    x = TimeDistributed(tf.keras.layers.MaxPooling2D(pool_size=(2,2),strides=2))(x)
+    x = TimeDistributed(tf.keras.layers.BatchNormalization(momentum=0.8), name='batchnorm_conv2')(x2)
+    x = TimeDistributed(tf.keras.layers.MaxPooling2D(pool_size=(2,2),strides=2), name='pooling_conv2')(x)
     
     x3 = tf.keras.layers.ConvLSTM2D(filters=18,activation='tanh',
                                          kernel_size=3,padding='same',
                                          return_sequences=True,
                                          recurrent_activation='sigmoid',
                                          recurrent_dropout=0,
-                                         unroll=False,use_bias=True) (x)
+                                         unroll=False,use_bias=True,
+                                         name='conv3') (x)
     
     x3_bis = tf.keras.layers.ConvLSTM2D(filters=18,activation='tanh',
                                          kernel_size=3,padding='same',
                                          return_sequences=False,
                                          recurrent_activation='sigmoid',
                                          recurrent_dropout=0,
-                                         unroll=False,use_bias=True) (x)
+                                         unroll=False,use_bias=True,
+                                         name='conv3_pont') (x)
     
-    x = TimeDistributed(tf.keras.layers.BatchNormalization(momentum=0.8))(x3)
-    x = TimeDistributed(tf.keras.layers.MaxPooling2D(pool_size=(2,2),strides=2))(x)
+    x = TimeDistributed(tf.keras.layers.BatchNormalization(momentum=0.8), name='batchnorm_conv3')(x3)
+    x = TimeDistributed(tf.keras.layers.MaxPooling2D(pool_size=(2,2),strides=2), name='pooling_conv3')(x)
     
     x = tf.keras.layers.ConvLSTM2D(filters=18,activation='tanh',
                                          kernel_size=3,padding='same',
                                          recurrent_activation='sigmoid',
                                          recurrent_dropout=0,
-                                         unroll=False,use_bias=True) (x)
+                                         unroll=False,use_bias=True,
+                                         name='conv4') (x)
     
-    x = tf.keras.layers.Conv2DTranspose(12, 3, padding='same', strides=2,activation='relu') (x)
-    x4 = tf.keras.layers.BatchNormalization(momentum=0.8) (x)  
+    x = tf.keras.layers.Conv2DTranspose(12, 3, padding='same', strides=2,activation='relu', name='convT1') (x)
+    x4 = tf.keras.layers.BatchNormalization(momentum=0.8, name='batchnorm_convT1') (x)  
     
     pont1 = tf.concat([x3_bis,x4],axis=-1)
     
-    x5 = tf.keras.layers.Conv2DTranspose(12, 3, padding='same', strides=2,activation='relu') (pont1)
-    x5 = tf.keras.layers.BatchNormalization(momentum=0.8) (x5)
+    x5 = tf.keras.layers.Conv2DTranspose(12, 3, padding='same', strides=2,activation='relu', name='convT2') (pont1)
+    x5 = tf.keras.layers.BatchNormalization(momentum=0.8, name='batchnorm_convT2') (x5)
     
     pont2 = tf.concat([x2_bis,x5],axis=-1)
     
     x6 = tf.keras.layers.LeakyReLU() (pont2)
-    x = tf.keras.layers.Conv2DTranspose(6, 3, strides=2, padding='same', activation='relu') (x6)
+    x = tf.keras.layers.Conv2DTranspose(6, 3, strides=2, padding='same', activation='relu', name='convT3') (x6)
     
-    x7 = tf.keras.layers.BatchNormalization(momentum=0.8) (x)
+    x7 = tf.keras.layers.BatchNormalization(momentum=0.8, name='batchnorm_convT3') (x)
     
     pont3 = tf.concat([x1_bis,x7],axis=-1)
     
     x8 = tf.keras.layers.LeakyReLU() (pont3)
-    y = tf.keras.layers.Conv2DTranspose(2, 3, padding='same', activation='softmax') (x8)
+    y = tf.keras.layers.Conv2DTranspose(2, 3, padding='same', activation='softmax', name='output') (x8)
     
-    model = tf.keras.models.Model(inputs=input_img,outputs=y)
+    model = tf.keras.models.Model(inputs=input_img,outputs=y, name='unet')
     
     loss_object = tf.keras.losses.SparseCategoricalCrossentropy()
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.005)
